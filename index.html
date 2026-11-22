@@ -2,7 +2,7 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>飆風玫瑰 × 生於憂患｜逆境九宮格</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -374,8 +374,8 @@ async function viewHome(){
   }
 }
 function switchStudent(){
-  if(!confirm('換人登記會清除這台裝置上目前的作答進度（已交出的成績不受影響），確定嗎？')) return;
-  S={choices:{},lit:{}}; save(); render();
+  modal(`<div class="qtitle">換人登記？</div><p>會清除這台裝置上目前的作答進度（已交出的成績不受影響）。</p>
+    <div style="display:flex;gap:10px"><button class="btn" onclick="S={choices:{},lit:{}};save();closeModal();render()">確定換人</button><button class="btn ghost" onclick="closeModal()">取消</button></div>`);
 }
 function redo(){
   const st=S.student; S={student:st,choices:{},lit:{}}; save(); go('quiz');
@@ -552,7 +552,7 @@ function vowGo(){
     <p>${copied?'✅ 誓言已複製。':'⚠️ 沒有自動複製成功，請長按上面的文字自行複製。'}到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳代表自己的照片</b>。</p>
     <div style="display:grid;gap:10px;margin-top:14px">
       <button class="btn ghost" onclick="copyText(${esc(JSON.stringify(full))})?toast('已再次複製'):toast('請長按文字複製')">再複製一次</button>
-      <button class="btn ghost" onclick="window.open(PADLET,'_blank','noopener')">再開一次 Padlet</button>
+      <a class="btn ghost" style="display:block;text-decoration:none" href="${esc(PADLET)}" target="_blank" rel="noopener">開啟 Padlet</a>
       <button class="btn gold" onclick="closeModal();drawBoard();if(lineCount()>0&&!S.celebrated){S.celebrated=true;save();confetti(1800);}">回到九宮格</button>
     </div></div>`;
 }
