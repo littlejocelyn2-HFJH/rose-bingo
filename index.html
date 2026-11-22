@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>飆風玫瑰 × 生於憂患｜逆境九宮格</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="config.js?v=1"></script>
+<style>
+  :root{
+    --black:#0b0b0d; --ink:#16161a; --card:#1d1d23; --line:#2c2c35;
+    --red:#ce1141; --red2:#ff2d55; --gold:#e8b84a; --gold2:#ffd76a; --white:#f7f5f0; --muted:#a9a6ad;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    background:radial-gradient(1200px 600px at 50% -200px,#3a0a16 0%,var(--black) 60%) fixed,var(--black);
+    color:var(--white);min-height:100vh;-webkit-tap-highlight-color:transparent}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit;font-size:16px}
+  .wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px}
+  .wide{max-width:1100px}
+  .hidden{display:none!important}
+
+  /* 頁首 */
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(11,11,13,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .topbar .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+  .brand{font-weight:900;letter-spacing:.5px;color:var(--white);background:none;border:0;font-size:17px;padding:0;text-align:left}
+  .brand b{color:var(--red2)} .brand i{font-style:normal;color:var(--gold)}
+  .modeTag{margin-left:auto;font-size:12px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+
+  /* 通用 */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+  .btn{border:0;border-radius:14px;padding:14px 18px;font-weight:900;font-size:17px;color:#fff;background:var(--red);
+    box-shadow:0 6px 0 #7a0a27;transition:transform .08s, box-shadow .08s}
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #7a0a27}
+  .btn.gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#2a1a00;box-shadow:0 6px 0 #8a6516}
+  .btn.ghost{background:#2a2a33;box-shadow:0 6px 0 #111}
+  .btn.sm{padding:9px 12px;font-size:14px;border-radius:10px;box-shadow:0 3px 0 #111}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .link{background:none;border:0;color:var(--gold2);text-decoration:underline;font-size:15px;padding:6px}
+  .muted{color:var(--muted)}
+  .tag{display:inline-block;font-size:13px;padding:5px 10px;border-radius:99px;background:#26262e;border:1px solid var(--line);margin:3px}
+  .field{display:block;margin:10px 0}
+  .field span{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+  .field input,.field select,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #3a3a44;background:#111116;color:#fff}
+  .err{color:#ff8fa3;font-size:14px;min-height:20px}
+  table{border-collapse:collapse;width:100%}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+  th{color:var(--gold2);font-weight:700;white-space:nowrap}
+  .scroll{overflow-x:auto}
+
+  /* 主畫面 */
+  .hero h1{font-size:30px;line-height:1.25;margin:8px 0 6px;font-weight:900}
+  .hero h1 .en{display:block;font-size:15px;letter-spacing:3px;color:var(--gold);font-weight:700}
+  .hero h1 .x{color:var(--red2)}
+  .hero .sub{color:var(--muted);margin:0 0 12px}
+  .stripe{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--red),var(--gold),var(--red));margin:14px 0}
+  .steps{margin:0;padding-left:22px;line-height:1.9;list-style:decimal}
+  .report ul{list-style:none;padding-left:4px!important}
+
+  /* 九宮格 */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;aspect-ratio:1/1;width:100%;max-width:520px;margin:12px auto}
+  .cell{position:relative;border-radius:16px;border:2px solid #34343e;background:linear-gradient(160deg,#24242c,#15151a);
+    color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;
+    transition:transform .12s, box-shadow .2s;perspective:600px;overflow:hidden}
+  .cell:active{transform:scale(.94)}
+  .cell:hover{box-shadow:0 0 0 2px rgba(255,45,85,.5),0 0 22px rgba(255,45,85,.35)}
+  .cell .no{font-size:13px;color:var(--muted);font-weight:700}
+  .cell .t{font-size:clamp(13px,3.6vw,17px);font-weight:900;line-height:1.25;margin-top:4px}
+  .cell.lit{background:linear-gradient(160deg,var(--red2),var(--red) 60%,#7a0a27);border-color:#ff7a93;
+    box-shadow:0 0 18px rgba(255,45,85,.55);animation:flip .5s ease}
+  .cell.lit .no{color:#ffd0da}
+  .cell.lit::after{content:"✔";position:absolute;right:8px;top:4px;font-size:16px;color:#fff}
+  .cell.center{border:3px solid var(--gold);background:linear-gradient(160deg,#2b2210,#14110a);box-shadow:0 0 16px rgba(232,184,74,.35)}
+  .cell.center .no{color:var(--gold2)}
+  .cell.center.lit{background:linear-gradient(160deg,var(--gold2),var(--gold) 55%,#9a6b10);color:#2a1a00;border-color:#fff0bf;
+    animation:flip .5s ease, shine 1.6s ease-in-out infinite}
+  .cell.center.lit .no{color:#5a3a00}
+  .cell.center.lit::after{color:#2a1a00}
+  .cell.inline{box-shadow:0 0 0 3px #fff,0 0 26px rgba(255,215,106,.9)}
+  @keyframes flip{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+  @keyframes shine{0%,100%{box-shadow:0 0 14px rgba(255,215,106,.6)}50%{box-shadow:0 0 34px rgba(255,215,106,1)}}
+  .progress{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);max-width:520px;margin:0 auto}
+  .winbar{max-width:520px;margin:10px auto;border:2px solid var(--gold);border-radius:16px;padding:12px;background:#1f1808;text-align:center}
+
+  /* Modal */
+  .mask{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;padding:0}
+  .modal{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--ink);border:1px solid var(--line);
+    border-radius:22px 22px 0 0;padding:20px 18px 26px;animation:up .22s ease}
+  @media(min-width:700px){.mask{align-items:center;padding:20px}.modal{border-radius:22px}}
+  .modal.full{max-width:none;height:100vh;max-height:none;border-radius:0}
+  .modal.full .in{max-width:620px;margin:0 auto}
+  @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .qhead{font-size:13px;color:var(--gold2);font-weight:700;letter-spacing:1px}
+  .qtitle{font-size:22px;font-weight:900;margin:4px 0 10px}
+  .qstem{font-size:17px;line-height:1.7}
+  .opt{display:flex;gap:10px;width:100%;text-align:left;margin:10px 0;padding:14px;border-radius:14px;border:2px solid #3a3a44;background:#1b1b21;color:#fff;font-size:16px;line-height:1.5}
+  .opt b{flex:0 0 28px;height:28px;border-radius:50%;background:#34343e;display:flex;align-items:center;justify-content:center}
+  .opt.wrong{border-color:#5a2a35;color:#9d8a90;text-decoration:line-through}
+  .opt.wrong b{background:#5a2a35}
+  .opt.right{border-color:#ff7a93;background:#3a0f1b}
+  .hint{border-left:4px solid var(--gold);background:#221b0c;padding:10px 12px;border-radius:8px;line-height:1.7;margin-top:8px}
+  .shake{animation:shake .35s}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+  /* 誓言 */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tabs button{flex:1 1 30%;padding:10px 6px;border-radius:12px;border:2px solid #3a3a44;background:#1b1b21;color:#fff;font-weight:700;font-size:14px}
+  .tabs button.on{border-color:var(--gold);background:#2b2210;color:var(--gold2)}
+  .vow{font-size:17px;line-height:2.1;background:#121216;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .vow input{display:inline-block;width:9.5em;max-width:100%;padding:4px 8px;margin:0 2px;border:0;border-bottom:2px solid var(--gold);background:#2a2412;color:var(--gold2);border-radius:6px 6px 0 0;font-weight:700}
+  .vow input.bad{border-bottom-color:#ff5a7a;background:#3a1420}
+
+  /* 勳章 */
+  .medal{text-align:center;border:3px solid var(--gold);border-radius:22px;padding:22px 16px;
+    background:radial-gradient(circle at 50% 0%,#4a3510,#15110a 70%)}
+  .medal .big{font-size:64px;line-height:1}
+  .medal h2{margin:8px 0;font-size:24px;color:var(--gold2)}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:90;background:#fff;color:#111;font-weight:700;
+    padding:12px 16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:90vw;text-align:center}
+  #confetti{position:fixed;inset:0;pointer-events:none;z-index:80}
+
+  /* 報告書（淺色，方便列印） */
+  .report{background:#fffdf8;color:#1d1d1f;border-radius:18px;padding:20px}
+  .report h2{margin:0 0 4px;font-size:22px}
+  .report h3{margin:18px 0 8px;font-size:17px;color:#9b0c33;border-left:5px solid #ce1141;padding-left:8px}
+  .report .meta{color:#555;font-size:14px}
+  .report .lv{display:flex;gap:8px}
+  .report .lv>div{flex:1;border:2px solid #ddd;border-radius:12px;padding:10px;text-align:center;font-size:14px}
+  .report .lv>div.pass{border-color:#ce1141;background:#fff0f3}
+  .report .lv .ic{font-size:26px}
+  .report ul{margin:6px 0;padding-left:20px;line-height:1.8}
+  .report .quote{background:#f6f1e3;border-radius:10px;padding:10px 12px;line-height:1.8}
+  .report table td,.report table th{border-bottom:1px solid #e5e0d5;color:#222}
+  .report table th{color:#9b0c33}
+  #reportOverlay{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.7);overflow:auto;padding:16px}
+  #reportOverlay .report{max-width:700px;margin:0 auto}
+
+  /* 大屏：淺色底 */
+  body.screen{background:#f7f1e6;color:#1d1d1f}
+  body.screen .topbar{display:none}
+  .scr{padding:24px 32px;min-height:100vh}
+  .scr h1{font-size:44px;margin:0;font-weight:900}
+  .scr h1 span{color:#b30f3a}
+  .scr .grid{display:grid;grid-template-columns:1fr 1.3fr;gap:24px;margin-top:20px}
+  .scr .box{background:#fff;border-radius:22px;padding:22px 26px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+  .scr .box h2{margin:0 0 12px;font-size:28px;color:#7a0a27}
+  .scr .num{font-size:110px;font-weight:900;line-height:1;color:#b30f3a}
+  .scr .rank{font-size:30px;font-weight:700;display:flex;justify-content:space-between;padding:8px 0;border-bottom:2px solid #f0e6d6}
+  .scr .bar{display:flex;align-items:center;gap:12px;margin:9px 0;font-size:24px;font-weight:700}
+  .scr .bar .lab{flex:0 0 110px}
+  .scr .bar .track{flex:1;height:34px;background:#efe6d6;border-radius:10px;overflow:hidden}
+  .scr .bar .fill{height:100%;background:#a50e36;border-radius:10px}
+  .scr .bar .pct{flex:0 0 80px;text-align:right}
+  .scr select{font-size:22px;padding:6px 10px;border-radius:10px}
+  @media(max-width:900px){.scr .grid{grid-template-columns:1fr}}
+
+  @media print{
+    @page{size:A4;margin:12mm}
+    body{background:#fff!important;color:#000}
+    .topbar,.noprint,.mask,#confetti,.toast{display:none!important}
+    body.ov-open main{display:none!important}
+    #reportOverlay{position:static;background:none;padding:0;overflow:visible}
+    .report{padding:0;border-radius:0;font-size:12.5px}
+    .report h3{margin:10px 0 4px}
+  }
+</style>
+</head>
+<body>
+<header class="topbar noprint"><div class="in">
+  <button class="brand" onclick="go('')">🌹 <b>飆風玫瑰</b> × <i>生於憂患</i></button>
+  <span class="modeTag" id="modeTag"></span>
+</div></header>
+
+<main>
+  <!-- 主畫面 -->
+  <section id="v-home" class="wrap hidden">
+    <div class="hero">
+      <h1><span class="en">DERRICK ROSE × 孟子</span>飆風玫瑰 <span class="x">×</span><br>生於憂患，死於安樂</h1>
+      <p class="sub">逆境九宮格｜點亮格子、完成中央誓言，連成一線就能領 MVP 勳章</p>
+      <div><span class="tag">🏀 8 題選擇＋1 段誓言</span><span class="tag">⏱ 約 15 分鐘</span><span class="tag">📊 計分</span><span class="tag">📱 手機電腦皆可</span></div>
+    </div>
+    <div class="stripe"></div>
+    <div id="welcome" class="card hidden" style="margin-bottom:14px"></div>
+    <div style="display:grid;gap:14px">
+      <button class="btn" id="btnStart" onclick="go('quiz')">我是學生，開始作答</button>
+      <button class="btn ghost" id="btnReport" onclick="go('report')" style="display:none">📄 查看我的報告書</button>
+      <button class="btn ghost hidden" id="btnRedo" onclick="redo()">🔁 重新挑戰（老師已開放）</button>
+      <button class="btn ghost" onclick="go('scores')">老師入口</button>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <b>怎麼玩？</b>
+      <ol class="steps">
+        <li>填班級、座號、姓名。</li>
+        <li>點外圍格子答題，答對就會<span style="color:var(--red2);font-weight:900">紅色點亮</span>。</li>
+        <li>點正中央 ⭐ 寫下你的逆境誓言，複製後貼到 Padlet，並上傳一張代表自己的照片。</li>
+        <li>連成一條線（一定要通過中央）就能交出成果、領勳章。</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 作答 -->
+  <section id="v-quiz" class="wrap hidden">
+    <div class="flex items-center justify-between" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div><div class="qhead">逆境九宮格</div><div id="who" style="font-weight:700"></div></div>
+      <button class="btn ghost sm" onclick="go('')">🏠 回主畫面</button>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="progress"><span id="progLit"></span><span id="progLine"></span></div>
+    <div id="winbar" class="winbar hidden"></div>
+    <p class="muted" style="font-size:13px;text-align:center;max-width:520px;margin:14px auto 0">連線規則：橫、直、斜都可以，但一定要通過正中央 ⭐。</p>
+  </section>
+
+  <!-- 報告書（學生） -->
+  <section id="v-report" class="wrap hidden">
+    <div class="noprint" style="display:flex;gap:8px;margin-bottom:12px">
+      <button class="btn ghost sm" onclick="go('')">🏠 回主畫面</button>
+      <button class="btn ghost sm" onclick="window.print()">🖨 列印／存成 PDF</button>
+    </div>
+    <div id="myReport"></div>
+  </section>
+
+  <!-- 成績頁 -->
+  <section id="v-scores" class="wrap wide hidden">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn ghost sm" onclick="go('')">🏠 回主畫面</button>
+      <h2 style="margin:0 8px;font-size:22px">班級成績</h2>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div id="loginBox" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <b>老師登入</b>
+        <input id="pw" type="password" placeholder="教師密碼" autocomplete="current-password" style="flex:1;min-width:160px;padding:10px;border-radius:10px;border:1px solid #3a3a44;background:#111116;color:#fff">
+        <button class="btn sm" onclick="login()">登入</button>
+      </div>
+      <div id="logoutBox" class="hidden" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <b>✅ 老師已登入</b>
+        <button class="btn gold sm" onclick="go('screen')">📺 開啟大屏</button>
+        <button class="btn ghost sm" onclick="logout()">登出</button>
+        <span class="muted" style="font-size:13px">用公用電腦看完請按「登出」。</span>
+      </div>
+      <div class="err" id="loginErr"></div>
+    </div>
+    <div id="clsTabs" class="tabs" style="margin:14px 0"></div>
+    <div class="card"><h3 style="margin:0 0 8px">🏆 排行榜</h3><div class="scroll" id="board2"></div></div>
+    <div id="teacherArea" class="hidden"></div>
+  </section>
+
+  <!-- 大屏 -->
+  <section id="v-screen" class="hidden"></section>
+</main>
+
+<div id="modalRoot"></div>
+<div id="reportOverlay" class="hidden"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ============ 設定 ============ */
+const CFG = window.MZ_CONFIG || {};
+const API = (CFG.sheetApi || '').trim();
+const LOCAL = !API;
+const PADLET = CFG.padletUrl || 'https://padlet.com/littlejocelyn2/padlet-s025oy53qpkppc7l9job';
+const SKEY = 'rose_bingo_v1';
+
+/* 題目（只有題幹與選項；答案只在老師的 Apps Script） */
+const QS = {
+  q1:{no:1,title:'艱困環境的考驗',stem:'Rose 生長在環境複雜艱難的街區，他靠什麼專注自我、避免受到不良影響？',
+      opts:{A:'沉迷電動',B:'專注熱愛籃球，並有家人與鄰里保護',C:'逃避訓練'}},
+  q2:{no:2,title:'最年輕 MVP 的代價',stem:'Rose 在奪得 MVP 之前，主動在休賽季瘋狂苦練哪項原本不擅長的能力？',
+      opts:{A:'中遠距離跳投',B:'灌籃花招',C:'運球花式'}},
+  q3:{no:3,title:'勞其筋骨的重創',stem:'Rose 在生涯巔峰時遭遇了什麼重大打擊？',
+      opts:{A:'被球隊開除',B:'膝蓋十字韌帶斷裂與半月板撕裂',C:'與教練吵架'}},
+  q4:{no:4,title:'死於安樂的警惕',stem:'孟子說「死於安樂」，在體育運動中指的是什麼行為？',
+      opts:{A:'訓練很累就適當休息',B:'仗著自身天賦偷懶不練基本功，最後被殘酷淘汰',C:'輸球後檢討'}},
+  q6:{no:6,title:'曾益其所不能',stem:'失去原有的頂級爆發力後，Rose 如何在 NBA 繼續生存？',
+      opts:{A:'抱怨命運不公',B:'轉型控制節奏、打得更聰明並做好防守',C:'放棄比賽'}},
+  q7:{no:7,title:'50 分之夜的眼淚',stem:'在灰狼隊攻下 50 分後，Rose 在賽後訪問流淚說自己能做到是因為什麼？',
+      opts:{A:'運氣太好',B:'對手太弱',C:'我付出了全部的努力、拚盡了一切'}},
+  q8:{no:8,title:'困於心，衡於慮',stem:'面對傷病與被球隊交易釋出的絕境，Rose 做了什麼選擇？',
+      opts:{A:'永遠退出籃球',B:'凌晨回到球館繼續苦練',C:'改打街頭籃球'}},
+  q9:{no:9,title:'團隊與兄弟',stem:'當隊友或自己陷入低潮時，真正的運動家精神應該是？',
+      opts:{A:'嘲笑失誤的人',B:'互相扶持、一起吞下辛苦的訓練',C:'各打各的'}}
+};
+const QIDS = ['q1','q2','q3','q4','q6','q7','q8','q9'];
+const ORDER = ['q1','q2','q3','q4','c','q6','q7','q8','q9'];
+const LINES = [['q4','q6'],['q2','q8'],['q1','q9'],['q3','q7']]; // 都要通過中央
+const LEVELS = [
+  {name:'認識人物',desc:'讀懂 Rose 的經歷',qs:['q1','q2','q3','q7'],icon:'🏀'},
+  {name:'連結孟子',desc:'把故事和〈生於憂患〉對起來',qs:['q4','q6','q8'],icon:'📜'},
+  {name:'轉化實踐',desc:'把精神用在自己身上',qs:['q9','vow'],icon:'🔥'}
+];
+
+/* 中央鷹架（老師指定，非提示） */
+const SCAFFOLDS = {
+  A:{name:'鷹架 A：受傷與低潮復甦篇',parts:['在運動訓練中，我遇過最想放棄的時刻是【','】。但看著 Rose 從大傷中站起來，我知道這些痛苦是在讓我『曾益其所不能』。我不會逃避，我會像他一樣【','】，直到重回巔峰！'],
+     guide:['想一個具體的畫面：哪一次受傷、輸球、被罵，或練到快撐不住？寫出時間或情境。','寫一個你「做得到」的行動，例如：每天多做 50 下復健、每次練完再投 100 球。']},
+  B:{name:'鷹架 B：基本功與汗水篇',parts:['孟子說『苦其心志，勞其筋骨』，每天最折磨我的是【','】。如果只想安逸偷懶，最後只會被淘汰。為了在比賽中發光，我會咬緊牙關把【','】練到極致！'],
+     guide:['每天訓練裡，哪一個項目最讓你想逃？說出項目名稱。','你要練到極致的是哪一項能力？越具體越好。']},
+  C:{name:'鷹架 C：致未來的霸氣宣言篇',parts:['Rose 砍下 50 分時說他拚盡了全力。今年我的運動目標是【','】。下次當哨音響起、體能見底時，我會對自己大喊一句：【','】！'],
+     guide:['目標可以是成績、名次、入選，或某項數據，例如「全中運進前八」。','寫一句真的會喊出口、能讓你撐下去的話。']}
+};
+
+/* ============ 工具 ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(){ try{ return JSON.parse(localStorage.getItem(SKEY))||{}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(SKEY, JSON.stringify(S)); }catch(e){} }
+let S = load();
+S.choices = S.choices||{}; S.lit = S.lit||{};
+function toast(msg, ms){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), ms||2600); }
+function fmtTime(iso){ if(!iso) return ''; const d=new Date(iso); if(isNaN(d)) return esc(iso); const p=n=>String(n).padStart(2,'0'); return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function fmtSec(s){ s=Math.round(s||0); return s>=60? `${Math.floor(s/60)} 分 ${s%60} 秒` : `${s} 秒`; }
+function ss(k,v){ try{ if(v===undefined) return sessionStorage.getItem(k); if(v===null) sessionStorage.removeItem(k); else sessionStorage.setItem(k,v);}catch(e){return null;} }
+async function api(action, data){
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({action}, data||{}))});
+  if(!r.ok) throw new Error('連線失敗（'+r.status+'）');
+  return r.json();
+}
+function copyText(text){
+  try{ if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text); return true; } }catch(e){}
+  const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+  let ok=false; try{ ok=document.execCommand('copy'); }catch(e){} ta.remove(); return ok;
+}
+function modal(html, opts){
+  opts=opts||{};
+  $('#modalRoot').innerHTML = `<div class="mask" id="mask"><div class="modal ${opts.full?'full':''}" id="modalBox">${html}</div></div>`;
+  if(!opts.sticky) $('#mask').addEventListener('click', e=>{ if(e.target.id==='mask') closeModal(); });
+}
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+function stu(){ return S.student ? {cls:S.student.cls, seat:S.student.seat, name:S.student.name} : null; }
+function stuLabel(){ const s=S.student; return s? `${esc(s.cls)} 班 ${esc(s.seat)} 號 ${esc(s.name)}` : ''; }
+
+/* ============ 路由 ============ */
+function go(r){ location.hash = r ? '#'+r : '#'; if(!r) render(); }
+window.addEventListener('hashchange', render);
+let screenTimer=null;
+function render(){
+  const r = (location.hash||'').replace('#','');
+  closeModal();
+  if(screenTimer){ clearInterval(screenTimer); screenTimer=null; }
+  document.body.classList.toggle('screen', r==='screen');
+  ['home','quiz','report','scores','screen'].forEach(v=>$('#v-'+v).classList.add('hidden'));
+  $('#modeTag').textContent = LOCAL ? '本機模式・不計分' : '已連線';
+  if(r==='quiz') return viewQuiz();
+  if(r==='report') return viewMyReport();
+  if(r==='scores') return viewScores();
+  if(r==='screen') return viewScreen();
+  viewHome();
+}
+
+/* ============ 主畫面 ============ */
+async function viewHome(){
+  $('#v-home').classList.remove('hidden');
+  const w=$('#welcome');
+  const litN = Object.keys(S.lit).filter(k=>S.lit[k]).length;
+  if(S.student){
+    w.classList.remove('hidden');
+    w.innerHTML = `歡迎，<b>${stuLabel()}</b>` + (S.submitted? `<div style="margin-top:6px;color:var(--gold2);font-weight:900">✅ 已完成，MVP 勳章到手！</div>` : (litN? `<div class="muted" style="margin-top:6px">已點亮 ${litN} / 9 格</div>`:''))
+      + `<div><button class="link" onclick="switchStudent()">不是我？換人登記</button></div>`;
+  } else w.classList.add('hidden');
+  $('#btnStart').textContent = S.submitted ? '查看作答狀態' : (litN ? '繼續作答' : '我是學生，開始作答');
+  $('#btnReport').style.display = S.submitted ? '' : 'none';
+  $('#btnRedo').classList.add('hidden');
+  if(S.submitted && !LOCAL && S.student){
+    try{ const r=await api('myReport', stu()); if(r.ok){ if(r.report) S.report=r.report; S.canRedo=!!r.canRedo; save(); if(r.canRedo) $('#btnRedo').classList.remove('hidden'); } }catch(e){}
+  }
+}
+function switchStudent(){
+  if(!confirm('換人登記會清除這台裝置上目前的作答進度（已交出的成績不受影響），確定嗎？')) return;
+  S={choices:{},lit:{}}; save(); render();
+}
+function redo(){
+  const st=S.student; S={student:st,choices:{},lit:{}}; save(); go('quiz');
+}
+
+/* ============ 登記 ============ */
+function askRegister(){
+  const s=S.student||{};
+  modal(`
+    <div class="qhead">先登記再開始</div>
+    <div class="qtitle">你是誰？</div>
+    <label class="field"><span>班級</span><input id="rCls" maxlength="6" inputmode="numeric" placeholder="例如 301" value="${esc(s.cls||'')}"></label>
+    <label class="field"><span>座號（1～60）</span><input id="rSeat" type="number" min="1" max="60" inputmode="numeric" value="${esc(s.seat||'')}"></label>
+    <label class="field"><span>姓名</span><input id="rName" maxlength="12" value="${esc(s.name||'')}"></label>
+    <div class="err" id="rErr"></div>
+    <button class="btn" style="width:100%" onclick="doRegister()">開始挑戰 🏀</button>
+    <div style="text-align:center;margin-top:12px"><button class="link" onclick="go('scores')">我是老師，先略過，直接看班級成績 →</button></div>
+    <div style="text-align:center"><button class="link" onclick="go('')">🏠 回主畫面</button></div>
+  `, {sticky:true});
+}
+async function doRegister(){
+  const cls=$('#rCls').value.trim(), seat=Number($('#rSeat').value), name=$('#rName').value.trim();
+  const e=$('#rErr');
+  if(!cls || /^0+$/.test(cls)) return e.textContent='請填正確的班級';
+  if(!(seat>=1&&seat<=60) || Math.floor(seat)!==seat) return e.textContent='座號要是 1～60';
+  if(!name) return e.textContent='請填姓名';
+  S.student={cls,seat,name};
+  if(!S.startedAt) S.startedAt=Date.now();
+  save();
+  if(!LOCAL){
+    e.textContent='確認中…';
+    try{
+      const r=await api('myReport', stu());
+      if(!r.ok){ e.textContent=r.error||'登記失敗'; S.student=null; save(); return; }
+      if(r.report && !r.canRedo){ S.submitted=true; S.report=r.report; save(); closeModal(); toast('你已經交過了，帶你看報告書'); return go('report'); }
+    }catch(err){ /* 連不上也能先玩，交卷時再處理 */ }
+  }
+  closeModal(); viewQuiz();
+}
+
+/* ============ 九宮格 ============ */
+function viewQuiz(){
+  $('#v-quiz').classList.remove('hidden');
+  if(!S.student) return askRegister();
+  if(!S.startedAt){ S.startedAt=Date.now(); save(); }
+  $('#who').innerHTML = stuLabel();
+  drawBoard();
+}
+function lineCount(){ return S.lit.c ? LINES.filter(l=>S.lit[l[0]]&&S.lit[l[1]]).length : 0; }
+function drawBoard(){
+  const inLine = new Set();
+  if(S.lit.c) LINES.forEach(l=>{ if(S.lit[l[0]]&&S.lit[l[1]]){ inLine.add(l[0]); inLine.add(l[1]); inLine.add('c'); } });
+  $('#board').innerHTML = ORDER.map(k=>{
+    if(k==='c') return `<button class="cell center ${S.lit.c?'lit':''} ${inLine.has('c')?'inline':''}" onclick="openCenter()">
+      <span class="no">⭐ 第 5 格</span><span class="t">${S.lit.c?'誓言已立':'核心解鎖'}</span><span style="font-size:12px;margin-top:4px">${S.lit.c?'金光解鎖':'（必填）'}</span></button>`;
+    const q=QS[k];
+    return `<button class="cell ${S.lit[k]?'lit':''} ${inLine.has(k)?'inline':''}" onclick="openQ('${k}')"><span class="no">第 ${q.no} 格</span><span class="t">${esc(q.title)}</span></button>`;
+  }).join('');
+  const n = ORDER.filter(k=>S.lit[k]).length, L=lineCount();
+  $('#progLit').textContent = `已點亮 ${n} / 9`;
+  $('#progLine').textContent = `連線 ${L} 條`;
+  const wb=$('#winbar');
+  if(S.submitted){
+    wb.classList.remove('hidden');
+    wb.innerHTML = `<b style="color:var(--gold2)">✅ 已交出成果</b><div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn gold sm" onclick="showMedal()">🏆 我的勳章</button><button class="btn ghost sm" onclick="go('report')">📄 報告書</button></div>`;
+  } else if(L>0){
+    wb.classList.remove('hidden');
+    wb.innerHTML = `<b style="color:var(--gold2)">🔥 達成 ${L} 條連線！</b><div class="muted" style="font-size:14px;margin:4px 0 10px">可以交出成果，也可以繼續點亮更多格、增加連線數（交出後就不能再改）。</div><button class="btn gold" style="width:100%" onclick="submitAll()">🏆 交出成果，領 MVP 勳章</button>`;
+  } else if(!S.lit.c && n>=2){
+    wb.classList.remove('hidden');
+    wb.innerHTML = `<span class="muted">⭐ 別忘了中央格！沒有點亮中央，就連不成線。</span>`;
+  } else wb.classList.add('hidden');
+}
+
+/* 外圍選擇題 */
+let busy=false;
+function openQ(k){
+  if(S.submitted) return toast('你已經交出成果囉');
+  const q=QS[k], tried=S.choices[k]||[], done=!!S.lit[k];
+  modal(`
+    <div class="qhead">第 ${q.no} 格</div>
+    <div class="qtitle">${esc(q.title)}</div>
+    <div class="qstem">${esc(q.stem)}</div>
+    <div id="opts">${['A','B','C'].map(o=>{
+      const wrong = tried.includes(o) && !(done && tried[tried.length-1]===o);
+      const right = done && tried[tried.length-1]===o;
+      return `<button class="opt ${wrong?'wrong':''} ${right?'right':''}" ${wrong||done?'disabled':''} onclick="pick('${k}','${o}')"><b>${o}</b><span>${esc(q.opts[o])}</span></button>`;}).join('')}</div>
+    <div id="qmsg">${done?'<div class="hint">✔ 這格已經點亮了！</div>':''}</div>
+    <button class="btn ghost sm" style="margin-top:14px" onclick="closeModal()">關閉</button>
+  `);
+}
+async function pick(k,o){
+  if(busy) return; busy=true;
+  const msg=$('#qmsg');
+  msg.innerHTML='<div class="muted">判定中…</div>';
+  try{
+    let correct, hint='';
+    if(LOCAL){ correct=true; }
+    else{
+      const r=await api('check', Object.assign({qid:k, choice:o}, stu()));
+      if(!r.ok){
+        if(r.locked){ S.submitted=true; save(); closeModal(); drawBoard(); toast(r.error,3500); return; }
+        msg.innerHTML=`<div class="err">${esc(r.error||'發生錯誤')}</div>`; return;
+      }
+      correct=r.correct; hint=r.hint;
+    }
+    S.choices[k]=(S.choices[k]||[]).concat(o);
+    if(correct){
+      S.lit[k]=true; save(); closeModal(); drawBoard();
+      toast(LOCAL ? '（本機模式：不判對錯，直接點亮）' : '答對！紅色點亮 🔥');
+      if(lineCount()>0 && !S.celebrated){ S.celebrated=true; save(); confetti(1800); }
+    } else {
+      save();
+      openQ(k);
+      $('#modalBox').classList.add('shake');
+      $('#qmsg').innerHTML = `<div class="hint">💡 ${esc(hint)}</div><div class="muted" style="font-size:14px;margin-top:6px">再選一次！</div>`;
+    }
+  }catch(err){
+    msg.innerHTML=`<div class="err">連不上伺服器，請檢查網路後再點一次。</div>`;
+  }finally{ busy=false; }
+}
+
+/* 中央誓言 */
+let vowScaf='A', vowTried=false;
+function openCenter(){
+  if(S.submitted) return toast('你已經交出成果囉');
+  const v=S.vow||{};
+  vowScaf=v.scaffold||vowScaf; vowTried=false;
+  modal(`<div class="in">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="qhead">⭐ 第 5 格｜核心解鎖（必填）</div><button class="btn ghost sm" onclick="closeModal()">✕</button></div>
+    <div class="qtitle">我的逆境誓言</div>
+    <div class="muted" style="font-size:14px;margin-bottom:8px">苦其心志，勞其筋骨……所以動心忍性，曾益其所不能。</div>
+    <label class="field"><span>姓名／座號（已帶入）</span><input value="${esc(S.student.cls)} 班 ${esc(S.student.seat)} 號 ${esc(S.student.name)}" readonly></label>
+    <div class="field"><span>選一款短文鷹架</span><div class="tabs" id="scafTabs"></div></div>
+    <div class="vow" id="vowBox"></div>
+    <div id="vowMsg" style="margin-top:8px"></div>
+    <button class="btn gold" style="width:100%;margin-top:14px" onclick="vowGo()">📋 複製我的誓言並前往 Padlet 貼文</button>
+    <p class="muted" style="font-size:13px">按下後會自動複製文字並開啟 Padlet：請<b>貼上文字</b>，並<b>上傳一張代表自己的照片</b>。</p>
+  </div>`, {full:true, sticky:true});
+  drawVow(v.scaffold===vowScaf ? (v.blanks||[]) : []);
+}
+function drawVow(vals){
+  $('#scafTabs').innerHTML = Object.keys(SCAFFOLDS).map(k=>`<button class="${k===vowScaf?'on':''}" onclick="switchScaf('${k}')">${esc(SCAFFOLDS[k].name.replace('：','\n').split('\n')[0])}<br><small>${esc(SCAFFOLDS[k].name.split('：')[1])}</small></button>`).join('');
+  const p=SCAFFOLDS[vowScaf].parts;
+  $('#vowBox').innerHTML = `${esc(p[0])}<input id="b0" maxlength="60" value="${esc(vals[0]||'')}">${esc(p[1])}<input id="b1" maxlength="60" value="${esc(vals[1]||'')}">${esc(p[2])}`;
+  $('#vowMsg').innerHTML='';
+}
+function switchScaf(k){
+  const cur=[ $('#b0').value, $('#b1').value ];
+  vowScaf=k; vowTried=false; drawVow(cur);
+}
+function vowText(){
+  const p=SCAFFOLDS[vowScaf].parts, b0=$('#b0').value.trim(), b1=$('#b1').value.trim();
+  return p[0]+b0+p[1]+b1+p[2];
+}
+function vowGo(){
+  const b=[ $('#b0').value.trim(), $('#b1').value.trim() ];
+  const bad=b.map(x=>x.length<2);
+  ['b0','b1'].forEach((id,i)=>$('#'+id).classList.toggle('bad',bad[i]));
+  if(bad.some(Boolean)){
+    // 先交、有錯才給：只對沒寫好的空格給引導
+    const g=SCAFFOLDS[vowScaf].guide;
+    $('#vowMsg').innerHTML = `<div class="hint">還差一點！${bad.map((x,i)=>x?`<div>第 ${i+1} 個空格：${esc(g[i])}</div>`:'').join('')}</div>`;
+    vowTried=true; return;
+  }
+  const text=vowText();
+  const full=`【${S.student.cls}班${S.student.seat}號 ${S.student.name}｜我的逆境誓言】\n${text}`;
+  const copied=copyText(full);
+  window.open(PADLET,'_blank','noopener');
+  S.vow={scaffold:vowScaf, blanks:b, text}; S.lit.c=true; save();
+  $('#modalBox').innerHTML = `<div class="in" style="text-align:center;padding-top:30px">
+    <div style="font-size:60px">⭐</div><div class="qtitle">中央核心已解鎖！</div>
+    <div class="vow" style="text-align:left">${esc(text)}</div>
+    <p>${copied?'✅ 誓言已複製。':'⚠️ 沒有自動複製成功，請長按上面的文字自行複製。'}到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳代表自己的照片</b>。</p>
+    <div style="display:grid;gap:10px;margin-top:14px">
+      <button class="btn ghost" onclick="copyText(${esc(JSON.stringify(full))})?toast('已再次複製'):toast('請長按文字複製')">再複製一次</button>
+      <button class="btn ghost" onclick="window.open(PADLET,'_blank','noopener')">再開一次 Padlet</button>
+      <button class="btn gold" onclick="closeModal();drawBoard();if(lineCount()>0&&!S.celebrated){S.celebrated=true;save();confetti(1800);}">回到九宮格</button>
+    </div></div>`;
+}
+
+/* ============ 交卷 ============ */
+async function submitAll(){
+  if(busy || S.submitted) return;
+  if(lineCount()<1) return toast('還沒有連線喔');
+  busy=true;
+  const payload = Object.assign({}, stu(), {choices:S.choices, vow:S.vow, seconds:Math.round((Date.now()-(S.startedAt||Date.now()))/1000), lines:lineCount(), at:new Date().toISOString()});
+  if(LOCAL){
+    const rec=JSON.parse(localStorage.getItem('rose_bingo_local')||'[]'); rec.push(payload); localStorage.setItem('rose_bingo_local', JSON.stringify(rec));
+    S.submitted=true; S.report=localReport(payload); save(); busy=false;
+    drawBoard(); confetti(3500); return showMedal();
+  }
+  modal(`<div class="qtitle">送出中…</div><div class="muted">請稍等，不要關閉網頁。</div>`, {sticky:true});
+  try{
+    const r=await api('save', payload);
+    if(r.ok){ S.submitted=true; S.report=r.report; S.code=null; save(); drawBoard(); confetti(3500); showMedal(); }
+    else if(r.locked){ S.submitted=true; if(r.report) S.report=r.report; save(); drawBoard(); closeModal(); toast(r.error,4000); }
+    else { closeModal(); toast(r.error||'送出失敗',4000); }
+  }catch(err){
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    S.code=code; save();
+    modal(`<div class="qtitle">⚠️ 連不上伺服器</div>
+      <p>先別擔心！請<b>再按一次「重試」</b>；如果還是不行，把下面的「成績碼」複製給老師。</p>
+      <textarea readonly style="width:100%;height:90px;font-size:12px;border-radius:10px;background:#111;color:#fff;padding:8px">${esc(code)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm" onclick="closeModal();submitAll()">重試</button><button class="btn ghost sm" onclick="copyText(S.code)&&toast('成績碼已複製')">複製成績碼</button><button class="btn ghost sm" onclick="closeModal()">關閉</button></div>`);
+  }finally{ busy=false; }
+}
+function showMedal(){
+  const rep=S.report||{};
+  const L = rep.lines!=null ? rep.lines : lineCount();
+  modal(`<div class="medal">
+    <div class="big">🏆</div>
+    <h2>MVP 逆境覺醒通關勳章</h2>
+    <div style="font-size:20px;font-weight:900">${stuLabel()}</div>
+    <div style="margin:10px 0;font-size:18px">完成連線 <b style="color:var(--gold2);font-size:30px">${esc(L)}</b> 條</div>
+    <p style="line-height:1.8">你已成功將磨難轉化為實力，<br>隨時準備好面對下一場戰役！</p>
+    ${LOCAL?'<p class="muted" style="font-size:13px">（本機模式：不計分，只供試用）</p>':''}
+  </div>
+  <div style="display:grid;gap:10px;margin-top:14px">
+    <button class="btn gold" onclick="toast('📸 請把這張勳章卡截圖，給老師看就能領課堂獎勵！',4000)">📸 截圖領取課堂獎勵</button>
+    <button class="btn ghost" onclick="go('report')">📄 查看我的報告書</button>
+    <button class="btn ghost" onclick="go('')">🏠 回主畫面</button>
+  </div>`);
+}
+
+/* ============ 報告書 ============ */
+function localReport(p){
+  return {cls:p.cls,seat:p.seat,name:p.name,at:p.at,seconds:p.seconds,lines:p.lines,vowOk:!!p.vow,vow:p.vow,local:true};
+}
+async function viewMyReport(){
+  $('#v-report').classList.remove('hidden');
+  if(!S.report){ $('#myReport').innerHTML='<div class="card">還沒有報告書，先去完成九宮格吧！</div>'; return; }
+  $('#myReport').innerHTML = reportHTML(S.report);
+  if(!LOCAL && S.student){
+    try{ const r=await api('myReport', stu()); if(r.ok && r.report){ S.report=r.report; save(); $('#myReport').innerHTML=reportHTML(r.report); } }catch(e){}
+  }
+}
+function reportHTML(rep){
+  const head = `<h2>🌹 逆境九宮格｜個人報告書</h2>
+    <div class="meta">${esc(rep.cls)} 班 ${esc(rep.seat)} 號 ${esc(rep.name)}｜完成時間 ${fmtTime(rep.at)}｜用時 ${fmtSec(rep.seconds)}｜連線 ${esc(rep.lines)} 條</div>`;
+  if(rep.local) return `<div class="report">${head}<h3>本機模式</h3><p>這次是在本機模式下試玩，沒有計分，所以沒有分析結果。</p>${rep.vow?`<h3>我的逆境誓言</h3><div class="quote">${esc(rep.vow.text)}</div>`:''}</div>`;
+  const lv = rep.levels||[];
+  const pass = lv.filter(l=>l.pass);
+  const strong = lv.filter(l=>l.got===l.total), weak = lv.filter(l=>!l.pass);
+  const icons = {'認識人物':'🏀','連結孟子':'📜','轉化實踐':'🔥'};
+  const feats=[];
+  if(strong.length) feats.push(`「${strong.map(l=>l.name).join('」「')}」一次就答對，很穩！`);
+  else if(pass.length) feats.push(`「${pass.map(l=>l.name).join('」「')}」已經過關。`);
+  if(rep.first>=6) feats.push('大部分題目第一次就選對，代表你讀題很專心。');
+  else if(rep.done===8) feats.push('就算第一次沒選對，你也會看提示再修正，最後全部點亮——這就是「曾益其所不能」。');
+  if(!feats.length) feats.push(`你完成了 ${rep.lines} 條連線，也寫下了自己的逆境誓言——願意面對、願意寫下來，就是改變的開始。`);
+  const better=[];
+  weak.forEach(l=>{
+    if(l.name==='認識人物') better.push('對 Rose 的經歷還可以更熟：回去看一次他從受傷到 50 分之夜的影片或文章。');
+    if(l.name==='連結孟子') better.push('把孟子的句子和真實事件對起來：例如「勞其筋骨」對應哪一次傷病？「死於安樂」對應什麼樣的行為？');
+    if(l.name==='轉化實踐') better.push('想想你自己的團隊：隊友低潮時，你能做的一件具體小事是什麼？');
+  });
+  if(!better.length) better.push('三個層次都過關了！挑戰：把你的誓言做成每天能檢查的小目標。');
+  const v=rep.vow;
+  let vfb='';
+  if(v && rep.vowOk){
+    const total=(v.blanks||[]).join('').length;
+    vfb = total>=16 ? '你的誓言寫得具體、有畫面，讀的人能感受到你的決心。接下來，記得真的去做！'
+                    : '你已經寫下誓言了！如果能再具體一點（例如寫出時間、次數、項目），會更有力量，也更容易做到。';
+  }
+  const next = weak.length
+    ? `先把「${weak[0].name}」補強：${weak[0].name==='連結孟子'?'重讀〈生於憂患，死於安樂〉第一段，圈出「苦其心志、勞其筋骨、餓其體膚、空乏其身」，各配一個運動員的例子。':weak[0].name==='認識人物'?'找一篇 Rose 的生涯介紹，畫出他的「高峰—低谷—再起」時間軸。':'和隊友分享你的誓言，請他一週後問你：做到了嗎？'}`
+    : '把誓言貼在置物櫃或手機桌布，每次練習前看一眼；一週後回頭檢查自己有沒有做到。';
+  return `<div class="report">${head}
+    <h3>我的閱讀層級</h3>
+    <div class="lv">${lv.map(l=>`<div class="${l.pass?'pass':''}"><div class="ic">${l.pass?icons[l.name]||'✔':'⬜'}</div><b>${esc(l.name)}</b><div style="font-size:12px;color:#666">${esc(l.desc)}</div><div style="margin-top:4px">${l.pass?'✅ 已過關':'加油中'}</div></div>`).join('')}</div>
+    <h3>各層次表現</h3>
+    <table><tr><th>層次</th><th>表現</th></tr>${lv.map(l=>`<tr><td>${esc(l.name)}</td><td>${l.got===l.total?'一次到位 🌟':l.pass?'大致掌握 👍':'還可以再加強 💪'}</td></tr>`).join('')}</table>
+    <h3>我的答題特色</h3>
+    <ul>${feats.map(f=>`<li>👍 ${esc(f)}</li>`).join('')}${better.map(f=>`<li>💪 ${esc(f)}</li>`).join('')}</ul>
+    <h3>我的逆境誓言</h3>
+    ${v&&v.text?`<div class="quote">${esc(v.text)}</div><p>💬 ${esc(vfb)}</p>`:'<p>（沒有誓言紀錄）</p>'}
+    <h3>下一步可以這樣做</h3>
+    <p>${esc(next)}</p>
+    ${rep.detail?`<h3>逐題解析（老師已公布）</h3><table><tr><th>格</th><th>我第一次選</th><th>答案</th><th>解析</th></tr>${rep.detail.map(d=>`<tr><td>${QS[d.q]?QS[d.q].no:''}</td><td>${esc(d.mine||'—')} ${d.ok?'✅':'❌'}</td><td>${esc(d.ans)}</td><td>${esc(d.exp)}</td></tr>`).join('')}</table>`:'<p style="color:#777;font-size:13px">逐題答案會在全班完成、老師公布後才顯示。</p>'}
+  </div>`;
+}
+function openReportOverlay(rep){
+  const o=$('#reportOverlay');
+  o.innerHTML = `<div class="noprint" style="max-width:700px;margin:0 auto 10px;display:flex;gap:8px"><button class="btn ghost sm" onclick="closeReportOverlay()">✕ 關閉</button><button class="btn ghost sm" onclick="window.print()">🖨 列印</button></div>${reportHTML(rep)}`;
+  o.classList.remove('hidden'); document.body.classList.add('ov-open');
+}
+function closeReportOverlay(){ $('#reportOverlay').classList.add('hidden'); document.body.classList.remove('ov-open'); }
+
+/* ============ 成績頁 ============ */
+let D=null, curCls=null, onlySus=false, seatFilter='';
+function pw(){ return ss('rb_pw')||''; }
+async function viewScores(){
+  $('#v-scores').classList.remove('hidden');
+  const isT = !!pw();
+  $('#loginBox').classList.toggle('hidden', isT); $('#logoutBox').classList.toggle('hidden', !isT);
+  $('#board2').innerHTML='<span class="muted">讀取中…</span>';
+  await loadData();
+  drawScores();
+}
+async function loadData(){
+  if(LOCAL){
+    const rec=JSON.parse(localStorage.getItem('rose_bingo_local')||'[]');
+    const map={};
+    rec.forEach(p=>{ const k=p.cls+'-'+p.seat; map[k]=map[k]||{key:k,cls:p.cls,seat:p.seat,name:p.name,best:0,lines:0,attempts:[]};
+      map[k].lines=Math.max(map[k].lines,p.lines); map[k].attempts.push({at:p.at,seconds:p.seconds,score:0,first:0,lines:p.lines,vow:p.vow,per:{}}); });
+    D={ok:true,teacher:true,local:true,rows:Object.values(map),settings:{suspectSec:30},answers:{}};
+    return;
+  }
+  try{
+    D = await api('list', pw()?{password:pw()}:{});
+    if(!D.ok){ if(pw()){ ss('rb_pw',null); $('#loginErr').textContent=D.error||'請重新登入'; } D = await api('list',{}); }
+    $('#loginBox').classList.toggle('hidden', !!D.teacher); $('#logoutBox').classList.toggle('hidden', !D.teacher);
+  }catch(e){ D={ok:false,rows:[]}; $('#board2').innerHTML='<span class="err">讀取失敗，請確認網路，或請老師檢查 config.js 的網址。</span>'; }
+}
+async function login(){
+  const p=$('#pw').value; $('#loginErr').textContent='';
+  if(LOCAL){ $('#loginErr').textContent='本機模式不需要登入（尚未設定後端）。'; return; }
+  try{
+    const r=await api('login',{password:p});
+    if(!r.ok) return $('#loginErr').textContent=r.error||'密碼錯誤';
+    ss('rb_pw',p); $('#pw').value=''; viewScores();
+  }catch(e){ $('#loginErr').textContent='連不上伺服器'; }
+}
+function logout(){ ss('rb_pw',null); viewScores(); }
+function classesOf(){
+  const cnt={}; (D.rows||[]).forEach(r=>cnt[r.cls]=(cnt[r.cls]||0)+1);
+  return Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a] || (a<b?-1:1)).map(c=>({c,n:cnt[c]}));
+}
+function isSus(a, sec){
+  if(a.seconds < sec) return true;
+  const f=QIDS.map(q=>a.per&&a.per[q]?a.per[q].first:'').filter(Boolean);
+  return f.length===QIDS.length && f.every(x=>x===f[0]) && a.first<QIDS.length;
+}
+function drawScores(){
+  if(!D || !D.rows) return;
+  const cl=classesOf();
+  if(!curCls || !cl.find(x=>x.c===curCls)) curCls = cl.length? cl[0].c : null;   // 預設人數最多的班
+  $('#clsTabs').innerHTML = cl.map(x=>`<button class="${x.c===curCls?'on':''}" onclick="curCls='${esc(x.c).replace(/'/g,'')}';drawScores()">${esc(x.c)} 班（${x.n}）</button>`).join('');
+  const T = !!D.teacher, sec = (D.settings&&D.settings.suspectSec)||30;
+  const rows=(D.rows||[]).filter(r=>r.cls===curCls).sort((a,b)=>b.best-a.best || b.lines-a.lines || a.seat-b.seat);
+  if(!rows.length){ $('#board2').innerHTML='<span class="muted">還沒有人交出成果。</span>'; }
+  else $('#board2').innerHTML = `<table><tr><th>名次</th><th>座號</th><th>姓名</th><th>得分</th><th>連線</th>${T?'<th>最後作答</th><th>疑似亂答</th>':''}</tr>
+    ${rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.seat)}</td><td>${esc(r.name)}</td><td><b>${D.local?'—':esc(r.best)}</b></td><td>${esc(r.lines)}</td>${T?`<td>${fmtTime(r.last||(r.attempts&&r.attempts.length?r.attempts[r.attempts.length-1].at:''))}</td><td>${(r.attempts||[]).filter(a=>isSus(a,sec)).length||''}</td>`:''}</tr>`).join('')}</table>
+    ${D.local?'<p class="muted" style="font-size:13px">本機模式不計分，只顯示這台裝置上的試玩紀錄。</p>':''}`;
+  const ta=$('#teacherArea');
+  if(!T){ ta.classList.add('hidden'); return; }
+  ta.classList.remove('hidden');
+  drawTeacher(rows, sec);
+}
+function drawTeacher(rows, sec){
+  const ta=$('#teacherArea'), st=D.settings||{};
+  // 作答紀錄
+  let att=[];
+  rows.forEach(r=>(r.attempts||[]).forEach(a=>att.push(Object.assign({key:r.key,cls:r.cls,seat:r.seat,name:r.name},a))));
+  att.sort((x,y)=>x.at<y.at?1:-1);
+  if(seatFilter) att=att.filter(a=>String(a.seat)===String(seatFilter));
+  if(onlySus) att=att.filter(a=>isSus(a,sec));
+  // 各題分析（每人最新一次）
+  const latest=rows.map(r=>r.attempts&&r.attempts.length?r.attempts[r.attempts.length-1]:null).filter(Boolean);
+  const qa=QIDS.map(q=>{
+    const dist={A:0,B:0,C:0}; let ok=0,n=0;
+    latest.forEach(a=>{ const p=a.per&&a.per[q]; if(p&&p.first){ n++; dist[p.first]=(dist[p.first]||0)+1; if(p.correctFirst) ok++; } });
+    return {q,n,ok,dist};
+  });
+  const ans=D.answers||{};
+  ta.innerHTML = `
+  ${!D.local && D.answersReady===false?'<div class="card" style="margin-top:14px;border-color:#ff5a7a"><b style="color:#ff8fa3">⚠️ Apps Script 還沒貼上答案區，學生無法作答。</b></div>':''}
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin:0 0 8px">🧾 作答紀錄（最新在上）</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-size:14px">
+      <label>座號 <input id="fSeat" value="${esc(seatFilter)}" style="width:60px;padding:6px;border-radius:8px;border:1px solid #444;background:#111;color:#fff" oninput="seatFilter=this.value.trim();drawScores()"></label>
+      <label><input type="checkbox" ${onlySus?'checked':''} onchange="onlySus=this.checked;drawScores()"> 只看疑似亂答</label>
+      <label>亂答門檻 <input id="fSec" type="number" value="${esc(sec)}" style="width:70px;padding:6px;border-radius:8px;border:1px solid #444;background:#111;color:#fff" onchange="setSetting({suspectSec:Number(this.value)})"> 秒</label>
+      <button class="btn ghost sm" onclick="copyTSV()">📋 複製到 Excel</button>
+    </div>
+    <div class="muted" style="font-size:13px;margin-bottom:6px">疑似亂答＝用時少於門檻，或 8 題第一次都選同一個選項且沒有全對。只是提醒，請老師確認。</div>
+    <div class="scroll"><table><tr><th>完成時間</th><th>座號</th><th>姓名</th><th>得分</th><th>首答對</th><th>連線</th><th>用時</th><th>各格作答</th><th>疑似</th><th></th></tr>
+    ${att.map(a=>`<tr><td>${fmtTime(a.at)}</td><td>${esc(a.seat)}</td><td>${esc(a.name)}</td><td>${esc(a.score)}</td><td>${esc(a.first)}/8</td><td>${esc(a.lines)}</td><td>${fmtSec(a.seconds)}</td>
+      <td style="font-size:12px">${QIDS.map(q=>`${QS[q].no}:${esc((a.per&&a.per[q]&&a.per[q].first)||'-')}${a.per&&a.per[q]&&a.per[q].tries>1?'('+a.per[q].tries+')':''}`).join(' ')}</td>
+      <td>${isSus(a,sec)?'⚠️':''}</td><td>${D.local?'':`<button class="btn ghost sm" onclick="delAttempt('${esc(a.key)}','${esc(a.at)}')">刪除</button>`}</td></tr>`).join('') || '<tr><td colspan="10" class="muted">沒有資料</td></tr>'}</table></div>
+    <div class="muted" style="font-size:12px">各格作答＝第一次選的選項；括號是嘗試次數。</div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin:0 0 8px">📊 各題分析（每人最新一次，第一次作答）</h3>
+    <div class="scroll"><table><tr><th>格</th><th>主題</th><th>首答正確率</th><th>A</th><th>B</th><th>C</th><th>答案</th><th>解析</th></tr>
+    ${qa.map(x=>`<tr><td>${QS[x.q].no}</td><td>${esc(QS[x.q].title)}</td><td><b>${x.n?Math.round(x.ok/x.n*100)+'%':'—'}</b></td><td>${x.dist.A}</td><td>${x.dist.B}</td><td>${x.dist.C}</td><td>${esc(ans[x.q]?ans[x.q].ans:'')}</td><td style="font-size:12px">${esc(ans[x.q]?ans[x.q].exp:'')}</td></tr>`).join('')}</table></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin:0 0 8px">⭐ 誓言牆（每人最新一次）</h3>
+    ${rows.map(r=>{const a=r.attempts&&r.attempts[r.attempts.length-1]; return a&&a.vow?`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(r.seat)} 號 ${esc(r.name)}</b>（鷹架 ${esc(a.vow.scaffold)}）<div style="line-height:1.7">${esc(a.vow.text)}</div></div>`:'';}).join('') || '<span class="muted">沒有資料</span>'}
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 style="margin:0 0 8px">🩺 學生診斷</h3>
+    <select id="diagSel" style="padding:10px;border-radius:10px;background:#111;color:#fff;border:1px solid #444">${rows.map(r=>`<option value="${esc(r.key)}">${esc(r.seat)} 號 ${esc(r.name)}</option>`).join('')}</select>
+    <button class="btn ghost sm" onclick="openDiag()">開啟報告書</button>
+  </div>
+
+  ${D.local?'':`<div class="card" style="margin-top:14px">
+    <h3 style="margin:0 0 8px">🛠 教師區</h3>
+    <div style="display:grid;gap:12px;font-size:15px">
+      <div><label><input type="checkbox" ${st.published?'checked':''} onchange="setSetting({published:this.checked})"> <b>公布解答</b>（打開後學生報告書會顯示逐題對錯與解析；建議全班做完再開）</label></div>
+      <div><b>開放重玩：</b> ${curCls?esc(curCls)+' 班':''} 座號 <input id="redoSeat" type="number" style="width:70px;padding:6px;border-radius:8px;border:1px solid #444;background:#111;color:#fff">
+        <button class="btn ghost sm" onclick="redoOne()">開放這位</button>
+        <label style="margin-left:8px"><input type="checkbox" ${st.redoAll?'checked':''} onchange="setSetting({redoAll:this.checked})"> 全部開放重玩</label>
+        ${(st.redo||[]).length?`<div class="muted" style="font-size:13px">已開放：${(st.redo||[]).map(k=>`${esc(k)} <button class="link" onclick="setSetting({redoRemove:'${esc(k)}'})">取消</button>`).join('、')}</div>`:''}</div>
+      <div><b>班級名單：</b> <input id="clsList" value="${esc((st.classes||[]).join(','))}" placeholder="例如 301,302（留空＝不限制）" style="width:240px;padding:6px;border-radius:8px;border:1px solid #444;background:#111;color:#fff">
+        <button class="btn ghost sm" onclick="setSetting({classes:$('#clsList').value.split(/[,，、\\s]+/).filter(Boolean)})">儲存</button></div>
+      <div><button class="btn ghost sm" onclick="exportCSV()">⬇️ 匯出 CSV（${esc(curCls||'')} 班）</button>
+        <button class="btn ghost sm" style="background:#5a1020" onclick="clearCls()">🗑 清除 ${esc(curCls||'')} 班資料</button></div>
+      <div><b>匯入成績碼：</b><br><textarea id="codeIn" style="width:100%;height:60px;border-radius:8px;background:#111;color:#fff;border:1px solid #444;font-size:12px"></textarea>
+        <button class="btn ghost sm" onclick="importCode()">匯入</button></div>
+    </div>
+  </div>`}`;
+}
+async function setSetting(s){
+  try{ const r=await api('setSettings',{password:pw(),settings:s}); if(!r.ok) return toast(r.error); D.settings=r.settings; toast('已儲存'); drawScores(); }catch(e){ toast('連不上伺服器'); }
+}
+function redoOne(){ const s=$('#redoSeat').value.trim(); if(!s||!curCls) return; setSetting({redoAdd:curCls+'-'+Number(s)}); }
+async function delAttempt(key,at){
+  if(!confirm('確定刪除這一筆作答？（例如冒名或測試資料）')) return;
+  try{ const r=await api('deleteAttempt',{password:pw(),key,at}); if(!r.ok) return toast(r.error); toast('已刪除'); viewScores(); }catch(e){ toast('連不上伺服器'); }
+}
+async function clearCls(){
+  if(!curCls) return;
+  const t=prompt(`確定清除「${curCls} 班」全部資料？請輸入班級「${curCls}」確認：`);
+  if(t!==curCls) return;
+  try{ const r=await api('clearClass',{password:pw(),cls:curCls}); if(!r.ok) return toast(r.error); toast(`已清除 ${r.removed} 位`); viewScores(); }catch(e){ toast('連不上伺服器'); }
+}
+async function importCode(){
+  const c=$('#codeIn').value.trim(); if(!c) return;
+  try{ const r=await api('importCode',{password:pw(),code:c}); if(!r.ok) return toast(r.error); toast('已匯入'); viewScores(); }catch(e){ toast('連不上伺服器'); }
+}
+const cellSafe = s => { s=String(s==null?'':s); return /^[=+\-@]/.test(s)? "'"+s : s; };
+function tableRows(){
+  const sec=(D.settings&&D.settings.suspectSec)||30, out=[];
+  (D.rows||[]).filter(r=>r.cls===curCls).forEach(r=>(r.attempts||[]).forEach(a=>out.push([fmtTime(a.at), r.cls, r.seat, r.name, a.score, a.first, a.lines, a.seconds, isSus(a,sec)?'是':'',
+    ...QIDS.map(q=>a.per&&a.per[q]?a.per[q].first:''), a.vow?a.vow.text:''].map(cellSafe))));
+  return [['完成時間','班級','座號','姓名','得分','首答正確','連線','用時秒','疑似亂答','第1格','第2格','第3格','第4格','第6格','第7格','第8格','第9格','誓言']].concat(out);
+}
+function copyTSV(){ copyText(tableRows().map(r=>r.map(c=>String(c).replace(/[\t\n]/g,' ')).join('\t')).join('\n')) ? toast('已複製，可直接貼到 Excel') : toast('複製失敗'); }
+function exportCSV(){
+  const csv='﻿'+tableRows().map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=`逆境九宮格_${curCls}班.csv`; a.click();
+}
+function openDiag(){
+  const k=$('#diagSel').value, r=(D.rows||[]).find(x=>x.key===k); if(!r||!r.attempts.length) return;
+  const a=r.attempts[r.attempts.length-1];
+  const lv=LEVELS.map(L=>{ let got=0; L.qs.forEach(q=>{ if(q==='vow'?a.vowOk:(a.per&&a.per[q]&&a.per[q].correctFirst)) got++; }); return {name:L.name,desc:L.desc,got,total:L.qs.length,pass:got/L.qs.length>=0.66}; });
+  const ans=D.answers||{};
+  openReportOverlay(D.local? localReport(Object.assign({cls:r.cls,seat:r.seat,name:r.name},a)) :
+    {cls:r.cls,seat:r.seat,name:r.name,at:a.at,seconds:a.seconds,score:a.score,first:a.first,done:a.done,lines:a.lines,vowOk:a.vowOk,vow:a.vow,levels:lv,
+     detail:QIDS.map(q=>({q,mine:a.per[q]&&a.per[q].first,ans:ans[q]?ans[q].ans:'',ok:a.per[q]&&a.per[q].correctFirst,exp:ans[q]?ans[q].exp:''}))});
+}
+
+/* ============ 大屏 ============ */
+async function viewScreen(){
+  const v=$('#v-screen'); v.classList.remove('hidden');
+  if(!LOCAL && !pw()){ v.innerHTML=`<div class="scr"><h1>大屏需要老師登入</h1><p style="font-size:22px">請先到 <a href="#scores">成績頁</a> 登入。</p></div>`; return; }
+  const draw=async()=>{
+    await loadData();
+    if(!D || !D.rows) return;
+    const cl=classesOf();
+    if(!curCls || !cl.find(x=>x.c===curCls)) curCls=cl.length?cl[0].c:null;
+    const rows=D.rows.filter(r=>r.cls===curCls).sort((a,b)=>b.best-a.best||b.lines-a.lines||a.seat-b.seat);
+    const latest=rows.map(r=>r.attempts&&r.attempts[r.attempts.length-1]).filter(Boolean);
+    const qa=QIDS.map(q=>{ let ok=0,n=0; latest.forEach(a=>{ const p=a.per&&a.per[q]; if(p&&p.first){n++; if(p.correctFirst) ok++;} }); return {q,pct:n?Math.round(ok/n*100):0,n}; });
+    const totalLines=rows.reduce((s,r)=>s+(r.lines||0),0);
+    v.innerHTML=`<div class="scr">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+        <h1>🌹 逆境九宮格 <span>即時戰況</span></h1>
+        <div class="noprint" style="display:flex;gap:10px;align-items:center">
+          <select onchange="curCls=this.value;screenDraw()">${cl.map(x=>`<option ${x.c===curCls?'selected':''} value="${esc(x.c)}">${esc(x.c)} 班</option>`).join('')}</select>
+          <button style="font-size:20px;padding:8px 14px;border-radius:10px;border:0;background:#7a0a27;color:#fff" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">⛶ 全螢幕</button>
+          <button style="font-size:20px;padding:8px 14px;border-radius:10px;border:0;background:#ddd" onclick="go('scores')">離開</button>
+        </div>
+      </div>
+      <div class="grid">
+        <div style="display:grid;gap:24px">
+          <div class="box"><h2>已完成</h2><div class="num">${rows.length}<span style="font-size:40px;color:#555"> 人</span></div><div style="font-size:26px;margin-top:8px">全班累計連線 <b style="color:#b30f3a">${totalLines}</b> 條</div></div>
+          <div class="box"><h2>🏆 排行榜</h2>${rows.slice(0,8).map((r,i)=>`<div class="rank"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(r.seat)} 號 ${esc(r.name)}</span><span>${D.local?'':esc(r.best)+' 分'}・${esc(r.lines)} 線</span></div>`).join('')||'<div style="font-size:26px;color:#777">等待第一位 MVP…</div>'}</div>
+        </div>
+        <div class="box"><h2>📊 各格首答正確率</h2>${qa.map(x=>`<div class="bar"><span class="lab">第 ${QS[x.q].no} 格</span><span class="track"><span class="fill" style="display:block;width:${x.pct}%"></span></span><span class="pct">${x.n?x.pct+'%':'—'}</span></div><div style="font-size:18px;color:#666;margin:-4px 0 6px 122px">${esc(QS[x.q].title)}</div>`).join('')}</div>
+      </div>
+      <div style="text-align:right;color:#888;font-size:16px;margin-top:12px">每 15 秒自動更新・${new Date().toLocaleTimeString('zh-TW')}</div>
+    </div>`;
+  };
+  window.screenDraw=draw;
+  await draw();
+  screenTimer=setInterval(draw,15000);
+}
+
+/* ============ 彩帶 ============ */
+function confetti(ms){
+  const c=$('#confetti'), x=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const colors=['#ce1141','#ff2d55','#ffd76a','#e8b84a','#ffffff','#111111'];
+  const P=Array.from({length:180},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.6,w:6+Math.random()*8,h:8+Math.random()*10,
+    vx:-2+Math.random()*4,vy:2+Math.random()*4,r:Math.random()*6,vr:-.2+Math.random()*.4,col:colors[Math.floor(Math.random()*colors.length)]}));
+  const end=Date.now()+ms;
+  (function f(){
+    x.clearRect(0,0,c.width,c.height);
+    P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=.03; p.r+=p.vr; x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle=p.col; x.fillRect(-p.w/2,-p.h/2,p.w,p.h); x.restore(); });
+    if(Date.now()<end) requestAnimationFrame(f); else x.clearRect(0,0,c.width,c.height);
+  })();
+}
+
+render();
+</script>
+</body>
+</html>
