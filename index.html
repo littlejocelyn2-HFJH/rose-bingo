@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="config.js?v=4"></script>
+<script src="config.js?v=5"></script>
 <style>
   :root{
     --bg:#ead7cf; --paper:#fbf6ef; --ink:#1d1d1f; --line:#1d1d1f; --soft:#e2cbc1;
@@ -193,7 +193,7 @@
     <div class="hero"><svg class="heroArt" viewBox="0 0 100 100" aria-hidden="true"><circle cx="58" cy="58" r="34" fill="#f07b2e"/><path d="M24 58h68M58 24v68M34 34c12 10 12 38 0 48M82 34c-12 10-12 38 0 48" stroke="#1d1d1f" stroke-width="3" fill="none"/><path d="M20 30c-2-10 6-18 14-16 8-2 14 6 12 14-2 8-10 12-14 10-6 2-12-2-12-8z" fill="#e8522a" stroke="#1d1d1f" stroke-width="3"/><path d="M28 26c4-4 10-2 10 4" stroke="#1d1d1f" stroke-width="2.5" fill="none"/><path d="M32 42l-4 18" stroke="#1f8a46" stroke-width="4"/><path d="M30 52c-6-4-12-2-12 2 4 2 9 2 12-2z" fill="#1f8a46"/></svg>
       <h1 style="padding-right:84px"><span class="en hand">DERRICK ROSE × 孟子</span>飆風玫瑰 <span class="x">×</span><br><span style="white-space:nowrap">生於憂患，</span><span style="white-space:nowrap">死於安樂</span></h1>
       <p class="sub">逆境九宮格｜點亮格子、完成中央心得，連成一線就能領 MVP 勳章</p>
-      <div><span class="tag">🏀 8 題選擇＋1 句心得</span><span class="tag">⏱ 約 15 分鐘</span><span class="tag">📊 計分</span><span class="tag">📱 手機電腦皆可</span></div>
+      <div><span class="tag">🏀 7 題選擇＋偶像名言＋觀影心得</span><span class="tag">⏱ 約 15 分鐘</span><span class="tag">📊 計分</span><span class="tag">📱 手機電腦皆可</span></div>
     </div>
     <div class="stripe"></div>
     <div id="welcome" class="card hidden" style="margin-bottom:14px"></div>
@@ -207,7 +207,7 @@
       <b>怎麼玩？</b>
       <ol class="steps">
         <li>填班級、座號、姓名。</li>
-        <li>點外圍格子答題，答對就會<b>上色點亮</b>。</li>
+        <li>點外圍格子答題，答對就會<b>上色點亮</b>；第 9 格是上傳任務：寫下你的偶像和他的名言。</li>
         <li>點正中央 ⭐ 寫一句看完影片的想法、拍一張照片（自己、和好朋友合照，或代表你的東西都可以），再到 Padlet 貼上。</li>
         <li>連成一條線（一定要通過中央）就能交出成果、領勳章。</li>
       </ol>
@@ -291,18 +291,17 @@ const QS = {
   q7:{no:7,title:'50 分之夜的眼淚',stem:'在灰狼隊攻下 50 分後，Rose 在賽後訪問流淚說自己能做到是因為什麼？',
       opts:{A:'運氣太好',B:'對手太弱',C:'我付出了全部的努力、拚盡了一切'}},
   q8:{no:8,title:'困於心，衡於慮',stem:'面對傷病與被球隊交易釋出的絕境，Rose 做了什麼選擇？',
-      opts:{A:'永遠退出籃球',B:'凌晨回到球館繼續苦練',C:'改打街頭籃球'}},
-  q9:{no:9,title:'團隊與兄弟',stem:'當隊友或自己陷入低潮時，真正的運動家精神應該是？',
-      opts:{A:'嘲笑失誤的人',B:'互相扶持、一起吞下辛苦的訓練',C:'各打各的'}}
+      opts:{A:'永遠退出籃球',B:'凌晨回到球館繼續苦練',C:'改打街頭籃球'}}
 };
-const QIDS = ['q1','q2','q3','q4','q6','q7','q8','q9'];
+const QIDS = ['q1','q2','q3','q4','q6','q7','q8'];  // 選擇題；第 9 格是「我的偶像名言」任務
+const IDOL_PADLET = CFG.idolPadletUrl || 'https://padlet.com/littlejocelyn2/breakout-room/Bk5x4dLNKoDN4Zgz-OPZ4XKEwpwE7bqg1';
 const ORDER = ['q1','q2','q3','q4','c','q6','q7','q8','q9'];
 const LIT = {q1:['#f6c21c','#1d1d1f'],q2:['#2e63c8','#fff'],q3:['#1f8a46','#fff'],q4:['#ef8e8c','#1d1d1f'],q6:['#5fb3e4','#1d1d1f'],q7:['#e8522a','#fff'],q8:['#f07b2e','#1d1d1f'],q9:['#2e63c8','#fff']};
 const LINES = [['q4','q6'],['q2','q8'],['q1','q9'],['q3','q7']]; // 都要通過中央
 const LEVELS = [
   {name:'認識人物',desc:'讀懂 Rose 的經歷',qs:['q1','q2','q3','q7'],icon:'🏀'},
   {name:'連結孟子',desc:'把故事和〈生於憂患〉對起來',qs:['q4','q6','q8'],icon:'📜'},
-  {name:'轉化實踐',desc:'把精神用在自己身上',qs:['q9','vow'],icon:'🔥'}
+  {name:'轉化實踐',desc:'把精神用在自己身上',qs:['idol','vow'],icon:'🔥'}
 ];
 
 /* 中央鷹架：一句觀影心得（老師指定） */
@@ -436,6 +435,7 @@ function drawBoard(){
   $('#board').innerHTML = ORDER.map(k=>{
     if(k==='c') return `<button class="cell center ${S.lit.c?'lit':''} ${inLine.has('c')?'inline':''}" onclick="openCenter()">
       <span class="no">⭐ 第 5 格</span><span class="t">${S.lit.c?'心得已貼':'觀影心得'}</span><span style="font-size:12px;margin-top:4px">${S.lit.c?'金光解鎖':'（必填）'}</span></button>`;
+    if(k==='q9') return `<button class="cell ${S.lit.q9?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT.q9[0]};--litInk:${LIT.q9[1]}" onclick="openIdol()"><span class="no">第 9 格</span><span class="t">我的偶像名言</span><span style="font-size:11px;margin-top:3px">📷 上傳任務</span></button>`;
     const q=QS[k];
     return `<button class="cell ${S.lit[k]?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT[k][0]};--litInk:${LIT[k][1]}" onclick="openQ('${k}')"><span class="no">第 ${q.no} 格</span><span class="t">${esc(q.title)}</span></button>`;
   }).join('');
@@ -554,6 +554,17 @@ function onPhoto(input){
 }
 async function makeCard(){
   if(!photoImg) return;
+  cardURL = await buildCard(photoImg, '看完影片，我想說…', vowText(), cardURL);
+  const fn=`心得卡_${S.student.cls}班${S.student.seat}號.png`;
+  const pb=$('#photoBox'); if(!pb) return; pb.innerHTML=cardBox(cardURL, fn, '心得卡', "$('#photoIn').click()");
+}
+function cardBox(url, fn, label, retake){
+  return `<div style="display:flex;gap:12px;align-items:center;margin-top:6px"><img src="${url}" style="width:110px;border:3px solid #1d1d1f;border-radius:12px">
+    <div style="display:grid;gap:8px"><b style="color:var(--green)">✅ ${label}做好了</b><a class="btn sm" style="text-decoration:none;text-align:center" href="${url}" download="${esc(fn)}">⬇️ 存下${label}</a>
+    <span style="font-size:12px">手機若沒反應：長按左邊的圖 →「儲存影像」</span><button class="link" style="text-align:left;padding:0" onclick="${retake}">重選照片</button></div></div>`;
+}
+async function buildCard(img, title, text, oldURL){
+  const photoImg=img;
   try{ await document.fonts.load('900 48px "Noto Sans TC"'); }catch(e){}
   const W=1080,H=1350,c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
   const F='"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
@@ -568,23 +579,19 @@ async function makeCard(){
   const dot=(cx,cy,r,col)=>{x.beginPath();x.arc(cx,cy,r,0,7);x.fillStyle=col;x.fill();};
   dot(px-10,py+40,26,'#f6c21c'); dot(px+P+6,py+P-50,22,'#2e63c8'); dot(px+P-20,py-6,16,'#e8522a');
   x.fillStyle='#1d1d1f'; x.textAlign='center';
-  x.font=`900 50px ${F}`; x.fillText('看完影片，我想說…',W/2,py+P+86);
+  x.font=`900 50px ${F}`; x.fillText(title,W/2,py+P+86);
   x.font=`700 34px ${F}`; x.fillStyle='#2e63c8'; x.fillText(`${S.student.cls} 班 ${S.student.seat} 號 ${S.student.name}`,W/2,py+P+138);
   // 誓言文字自動換行
   x.textAlign='left'; x.fillStyle='#1d1d1f'; x.font=`700 34px ${F}`;
-  const text=vowText(), maxW=W-260, lines=[]; let line='';
+  const maxW=W-260, lines=[]; let line='';
   for(const ch of text){ if(x.measureText(line+ch).width>maxW){ lines.push(line); line=ch; } else line+=ch; }
   if(line) lines.push(line);
   const top=py+P+200, lh=52; lines.slice(0,7).forEach((l,i)=>x.fillText(l,130,top+i*lh));
   x.textAlign='center'; x.font=`700 26px ${F}`; x.fillStyle='#6b5f5a';
   x.fillText('🌹 飆風玫瑰 × 生於憂患・逆境九宮格',W/2,H-100);
-  if(cardURL) URL.revokeObjectURL(cardURL);
+  if(oldURL) URL.revokeObjectURL(oldURL);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));
-  cardURL=URL.createObjectURL(blob);
-  const fn=`心得卡_${S.student.cls}班${S.student.seat}號.png`;
-  const pb=$('#photoBox'); if(!pb) return; pb.innerHTML=`<div style="display:flex;gap:12px;align-items:center;margin-top:6px"><img src="${cardURL}" style="width:110px;border:3px solid #1d1d1f;border-radius:12px">
-    <div style="display:grid;gap:8px"><b style="color:var(--green)">✅ 心得卡做好了</b><a class="btn sm" style="text-decoration:none;text-align:center" href="${cardURL}" download="${esc(fn)}">⬇️ 存下心得卡</a>
-    <span style="font-size:12px">手機若沒反應：長按左邊的圖 →「儲存影像」</span><button class="link" style="text-align:left;padding:0" onclick="$('#photoIn').click()">重拍</button></div></div>`;
+  return URL.createObjectURL(blob);
 }
 function drawVow(vals){
   const sc=SCAFFOLDS[vowScaf], p=sc.parts;
@@ -626,12 +633,85 @@ function vowGo(e){
   return true;
 }
 
+
+/* 第 9 格：我的偶像名言 */
+let idolImg=null, idolURL=null;
+function openIdol(){
+  if(S.submitted) return toast('你已經交出成果囉');
+  const d=S.idol||{}; idolImg=null; idolURL=null;
+  modal(`<div class="in">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="qhead">第 9 格｜上傳任務</div><button class="btn ghost sm" onclick="closeModal()">✕</button></div>
+    <div class="qtitle">我的偶像名言</div>
+    <div class="muted" style="font-size:14px;margin-bottom:8px">你的偶像可以是運動員、教練、家人，或任何讓你想變強的人。</div>
+    <div class="stepT">① 寫下偶像和他的名言</div>
+    <div class="vow">
+      我的偶像是<input id="i0" maxlength="20" placeholder="偶像的名字" value="${esc(d.name||'')}">
+      他說過一句話：「<textarea id="i1" maxlength="120" rows="2" placeholder="他的名言">${esc(d.quote||'')}</textarea>」
+    </div>
+    <div id="idolMsg" style="margin-top:8px"></div>
+    <div class="stepT">② 上傳偶像的照片</div>
+    <label class="btn ghost" style="display:block;text-align:center" onclick="return idolGate(event)">🖼️ 選擇照片<input id="idolIn" type="file" accept="image/*" style="display:none" onchange="onIdolPhoto(this)"></label>
+    <div id="idolBox" class="muted" style="font-size:13px;margin-top:6px">選好照片會自動做成「偶像名言卡」，請存到手機，等一下上傳到 Padlet。</div>
+    <div class="stepT">③ 前往 Padlet 貼文</div>
+    <a class="btn gold" style="display:block;text-align:center;text-decoration:none" href="${esc(IDOL_PADLET)}" target="_blank" rel="noopener" onclick="return idolGo(event)">👉 前往 Padlet（偶像區）</a>
+    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製文字）。到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳偶像名言卡（或照片）</b>。</p>
+  </div>`, {full:true, sticky:true});
+}
+function idolCheck(){
+  const n=$('#i0').value.trim(), q=$('#i1').value.trim();
+  const bad=[n.length<2, q.length<4];
+  $('#i0').classList.toggle('bad',bad[0]); $('#i1').classList.toggle('bad',bad[1]);
+  if(bad.some(Boolean)){
+    $('#idolMsg').innerHTML=`<div class="hint">還差一點！${bad[0]?'<div>寫下偶像的名字（可以是中文或英文）。</div>':''}${bad[1]?'<div>寫下他說過、讓你印象深刻的一句話。想不起原文，可以寫你記得的意思。</div>':''}</div>`;
+    return null;
+  }
+  $('#idolMsg').innerHTML=''; return {name:n, quote:q};
+}
+function idolGate(e){
+  if(e.target && e.target.id==='idolIn') return true;
+  if(!idolCheck()){ e.preventDefault(); toast('先完成第 ① 步喔'); return false; }
+  return true;
+}
+function onIdolPhoto(input){
+  const f=input.files&&input.files[0]; if(!f) return;
+  const img=new Image();
+  img.onload=async()=>{ idolImg=img; await makeIdolCard(); };
+  img.onerror=()=>toast('照片讀取失敗，請換一張');
+  img.src=URL.createObjectURL(f);
+}
+async function makeIdolCard(){
+  const d=idolCheck(); if(!idolImg||!d) return;
+  idolURL = await buildCard(idolImg, `我的偶像：${d.name}`, `「${d.quote}」`, idolURL);
+  const box=$('#idolBox'); if(box) box.innerHTML=cardBox(idolURL, `偶像名言卡_${S.student.cls}班${S.student.seat}號.png`, '偶像名言卡', "$('#idolIn').click()");
+}
+function idolGo(e){
+  const d=idolCheck();
+  if(!d || !idolImg){
+    setTimeout(()=>toast(!d?'Padlet 已開啟。回來寫完第 ① 步，這格才會點亮喔':'Padlet 已開啟。回來完成第 ② 步上傳照片，這格才會點亮喔',4500),300);
+    return true;
+  }
+  const full=`【${S.student.cls}班${S.student.seat}號 ${S.student.name}｜我的偶像】\n${d.name}：「${d.quote}」`;
+  const copied=copyText(full);
+  S.idol=d; S.lit.q9=true; save();
+  makeIdolCard().then(()=>{ const mb=$('#modalBox'); if(!mb) return; mb.innerHTML=`<div class="in" style="text-align:center;padding-top:24px">
+    <div style="font-size:56px">🌟</div><div class="qtitle">第 9 格點亮！</div>
+    ${idolURL?`<img src="${idolURL}" style="width:200px;border:3px solid #1d1d1f;border-radius:14px;margin:6px auto">`:''}
+    <p>${copied?'✅ 文字已複製。':'⚠️ 沒有自動複製成功，請手動輸入。'}到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳偶像名言卡</b>。</p>
+    <div style="display:grid;gap:10px;margin-top:14px">
+      ${idolURL?`<a class="btn ghost" style="display:block;text-decoration:none" href="${idolURL}" download="偶像名言卡_${esc(S.student.cls)}班${esc(S.student.seat)}號.png">⬇️ 再存一次偶像名言卡</a>`:''}
+      <button class="btn ghost" onclick="copyText(${esc(JSON.stringify(full))})?toast('已再次複製'):toast('複製失敗')">再複製一次文字</button>
+      <a class="btn ghost" style="display:block;text-decoration:none" href="${esc(IDOL_PADLET)}" target="_blank" rel="noopener">開啟 Padlet（偶像區）</a>
+      <button class="btn gold" onclick="closeModal();drawBoard();if(lineCount()>0&&!S.celebrated){S.celebrated=true;save();confetti(1800);}">回到九宮格</button>
+    </div></div>`; });
+  return true;
+}
+
 /* ============ 交卷 ============ */
 async function submitAll(){
   if(busy || S.submitted) return;
   if(lineCount()<1) return toast('還沒有連線喔');
   busy=true;
-  const payload = Object.assign({}, stu(), {choices:S.choices, vow:S.vow, seconds:Math.round((Date.now()-(S.startedAt||Date.now()))/1000), lines:lineCount(), at:new Date().toISOString()});
+  const payload = Object.assign({}, stu(), {choices:S.choices, vow:S.vow, idol:S.idol, seconds:Math.round((Date.now()-(S.startedAt||Date.now()))/1000), lines:lineCount(), at:new Date().toISOString()});
   if(LOCAL){
     const rec=JSON.parse(localStorage.getItem('rose_bingo_local')||'[]'); rec.push(payload); localStorage.setItem('rose_bingo_local', JSON.stringify(rec));
     S.submitted=true; S.report=localReport(payload); save(); busy=false;
@@ -700,7 +780,7 @@ function reportHTML(rep){
   weak.forEach(l=>{
     if(l.name==='認識人物') better.push('對 Rose 的經歷還可以更熟：回去看一次他從受傷到 50 分之夜的影片或文章。');
     if(l.name==='連結孟子') better.push('把孟子的句子和真實事件對起來：例如「勞其筋骨」對應哪一次傷病？「死於安樂」對應什麼樣的行為？');
-    if(l.name==='轉化實踐') better.push('想想你自己的團隊：隊友低潮時，你能做的一件具體小事是什麼？');
+    if(l.name==='轉化實踐') better.push('把影片和偶像的話連到自己身上：下次訓練最想放棄時，你會用哪一句話撐下去？');
   });
   if(!better.length) better.push('三個層次都過關了！挑戰：把影片給你的力量，變成下次訓練的一個具體小目標。');
   const v=rep.vow;
@@ -722,6 +802,7 @@ function reportHTML(rep){
     <ul>${feats.map(f=>`<li>👍 ${esc(f)}</li>`).join('')}${better.map(f=>`<li>💪 ${esc(f)}</li>`).join('')}</ul>
     <h3>我的觀影心得</h3>
     ${v&&v.text?`<div class="quote">${esc(v.text)}</div><p>💬 ${esc(vfb)}</p>`:'<p>（沒有心得紀錄）</p>'}
+    ${rep.idol?`<h3>我的偶像名言</h3><div class="quote"><b>${esc(rep.idol.name)}</b>：「${esc(rep.idol.quote)}」</div>`:''}
     <h3>下一步可以這樣做</h3>
     <p>${esc(next)}</p>
     ${rep.detail?`<h3>逐題解析（老師已公布）</h3><table><tr><th>格</th><th>我第一次選</th><th>答案</th><th>解析</th></tr>${rep.detail.map(d=>`<tr><td>${QS[d.q]?QS[d.q].no:''}</td><td>${esc(d.mine||'—')} ${d.ok?'✅':'❌'}</td><td>${esc(d.ans)}</td><td>${esc(d.exp)}</td></tr>`).join('')}</table>`:'<p style="color:#777;font-size:13px">逐題答案會在全班完成、老師公布後才顯示。</p>'}
@@ -821,9 +902,9 @@ function drawTeacher(rows, sec){
       <label>亂答門檻 <input id="fSec" type="number" value="${esc(sec)}" class="teacherIn" style="width:70px" onchange="setSetting({suspectSec:Number(this.value)})"> 秒</label>
       <button class="btn ghost sm" onclick="copyTSV()">📋 複製到 Excel</button>
     </div>
-    <div class="muted" style="font-size:13px;margin-bottom:6px">疑似亂答＝用時少於門檻，或 8 題第一次都選同一個選項且沒有全對。只是提醒，請老師確認。</div>
+    <div class="muted" style="font-size:13px;margin-bottom:6px">疑似亂答＝用時少於門檻，或 7 題選擇題第一次都選同一個選項且沒有全對。只是提醒，請老師確認。</div>
     <div class="scroll"><table><tr><th>完成時間</th><th>座號</th><th>姓名</th><th>得分</th><th>首答對</th><th>連線</th><th>用時</th><th>各格作答</th><th>疑似</th><th></th></tr>
-    ${att.map(a=>`<tr><td>${fmtTime(a.at)}</td><td>${esc(a.seat)}</td><td>${esc(a.name)}</td><td>${esc(a.score)}</td><td>${esc(a.first)}/8</td><td>${esc(a.lines)}</td><td>${fmtSec(a.seconds)}</td>
+    ${att.map(a=>`<tr><td>${fmtTime(a.at)}</td><td>${esc(a.seat)}</td><td>${esc(a.name)}</td><td>${esc(a.score)}</td><td>${esc(a.first)}/7</td><td>${esc(a.lines)}</td><td>${fmtSec(a.seconds)}</td>
       <td style="font-size:12px">${QIDS.map(q=>`${QS[q].no}:${esc((a.per&&a.per[q]&&a.per[q].first)||'-')}${a.per&&a.per[q]&&a.per[q].tries>1?'('+a.per[q].tries+')':''}`).join(' ')}</td>
       <td>${isSus(a,sec)?'⚠️':''}</td><td>${D.local?'':`<button class="btn ghost sm" onclick="delAttempt('${esc(a.key)}','${esc(a.at)}')">刪除</button>`}</td></tr>`).join('') || '<tr><td colspan="10" class="muted">沒有資料</td></tr>'}</table></div>
     <div class="muted" style="font-size:12px">各格作答＝第一次選的選項；括號是嘗試次數。</div>
@@ -836,8 +917,8 @@ function drawTeacher(rows, sec){
   </div>
 
   <div class="card" style="margin-top:14px">
-    <h3 style="margin:0 0 8px">⭐ 心得牆（每人最新一次）</h3>
-    ${rows.map(r=>{const a=r.attempts&&r.attempts[r.attempts.length-1]; return a&&a.vow?`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(r.seat)} 號 ${esc(r.name)}</b><div style="line-height:1.7">${esc(a.vow.text)}</div></div>`:'';}).join('') || '<span class="muted">沒有資料</span>'}
+    <h3 style="margin:0 0 8px">⭐ 心得與偶像名言牆（每人最新一次）</h3>
+    ${rows.map(r=>{const a=r.attempts&&r.attempts[r.attempts.length-1]; return a&&(a.vow||a.idol)?`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>${esc(r.seat)} 號 ${esc(r.name)}</b>${a.vow?`<div style="line-height:1.7">${esc(a.vow.text)}</div>`:''}${a.idol?`<div style="line-height:1.7;color:var(--blue)">🌟 ${esc(a.idol.name)}：「${esc(a.idol.quote)}」</div>`:''}</div>`:'';}).join('') || '<span class="muted">沒有資料</span>'}
   </div>
 
   <div class="card" style="margin-top:14px">
@@ -885,8 +966,8 @@ const cellSafe = s => { s=String(s==null?'':s); return /^[=+\-@]/.test(s)? "'"+s
 function tableRows(){
   const sec=(D.settings&&D.settings.suspectSec)||30, out=[];
   (D.rows||[]).filter(r=>r.cls===curCls).forEach(r=>(r.attempts||[]).forEach(a=>out.push([fmtTime(a.at), r.cls, r.seat, r.name, a.score, a.first, a.lines, a.seconds, isSus(a,sec)?'是':'',
-    ...QIDS.map(q=>a.per&&a.per[q]?a.per[q].first:''), a.vow?a.vow.text:''].map(cellSafe))));
-  return [['完成時間','班級','座號','姓名','得分','首答正確','連線','用時秒','疑似亂答','第1格','第2格','第3格','第4格','第6格','第7格','第8格','第9格','觀影心得']].concat(out);
+    ...QIDS.map(q=>a.per&&a.per[q]?a.per[q].first:''), a.idol?a.idol.name+'：「'+a.idol.quote+'」':'', a.vow?a.vow.text:''].map(cellSafe))));
+  return [['完成時間','班級','座號','姓名','得分','首答正確','連線','用時秒','疑似亂答','第1格','第2格','第3格','第4格','第6格','第7格','第8格','偶像名言','觀影心得']].concat(out);
 }
 function copyTSV(){ copyText(tableRows().map(r=>r.map(c=>String(c).replace(/[\t\n]/g,' ')).join('\t')).join('\n')) ? toast('已複製，可直接貼到 Excel') : toast('複製失敗'); }
 function exportCSV(){
@@ -896,10 +977,10 @@ function exportCSV(){
 function openDiag(){
   const k=$('#diagSel').value, r=(D.rows||[]).find(x=>x.key===k); if(!r||!r.attempts.length) return;
   const a=r.attempts[r.attempts.length-1];
-  const lv=LEVELS.map(L=>{ let got=0; L.qs.forEach(q=>{ if(q==='vow'?a.vowOk:(a.per&&a.per[q]&&a.per[q].correctFirst)) got++; }); return {name:L.name,desc:L.desc,got,total:L.qs.length,pass:got/L.qs.length>=0.66}; });
+  const lv=LEVELS.map(L=>{ let got=0; L.qs.forEach(q=>{ if(q==='vow'?a.vowOk:q==='idol'?a.idolOk:(a.per&&a.per[q]&&a.per[q].correctFirst)) got++; }); return {name:L.name,desc:L.desc,got,total:L.qs.length,pass:got/L.qs.length>=0.66}; });
   const ans=D.answers||{};
   openReportOverlay(D.local? localReport(Object.assign({cls:r.cls,seat:r.seat,name:r.name},a)) :
-    {cls:r.cls,seat:r.seat,name:r.name,at:a.at,seconds:a.seconds,score:a.score,first:a.first,done:a.done,lines:a.lines,vowOk:a.vowOk,vow:a.vow,levels:lv,
+    {cls:r.cls,seat:r.seat,name:r.name,at:a.at,seconds:a.seconds,score:a.score,first:a.first,done:a.done,lines:a.lines,vowOk:a.vowOk,vow:a.vow,idol:a.idol,levels:lv,
      detail:QIDS.map(q=>({q,mine:a.per[q]&&a.per[q].first,ans:ans[q]?ans[q].ans:'',ok:a.per[q]&&a.per[q].correctFirst,exp:ans[q]?ans[q].exp:''}))});
 }
 

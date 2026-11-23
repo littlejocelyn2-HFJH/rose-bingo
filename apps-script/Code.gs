@@ -13,13 +13,13 @@ const SEAT_MIN = 1, SEAT_MAX = 60;
 const NAME_MAX = 12, TEXT_MAX = 80;
 const SHEET_DATA = 'data';       // 給程式讀
 const SHEET_LOG = '作答紀錄';     // 給老師看
-const QIDS = ['q1', 'q2', 'q3', 'q4', 'q6', 'q7', 'q8', 'q9'];
+const QIDS = ['q1', 'q2', 'q3', 'q4', 'q6', 'q7', 'q8'];   // 選擇題（第 9 格改為「我的偶像名言」任務）
 
 // 三個層次（報告書用）
 const LEVELS = [
   { name: '認識人物', desc: '讀懂 Rose 的經歷', qs: ['q1', 'q2', 'q3', 'q7'] },
   { name: '連結孟子', desc: '把故事和〈生於憂患〉對起來', qs: ['q4', 'q6', 'q8'] },
-  { name: '轉化實踐', desc: '把精神用在自己身上', qs: ['q9', 'vow'] }
+  { name: '轉化實踐', desc: '把精神用在自己身上', qs: ['idol', 'vow'] }
 ];
 
 // ===== 答案區開始（GitHub 上只是佔位；請貼上老師另外收到的答案區）=====
@@ -157,7 +157,7 @@ function sheet(name, header) {
 function dataSheet() { return sheet(SHEET_DATA, ['key', '班級', '座號', '姓名', '活動', '最高分', '最多連線', '作答紀錄JSON', '更新時間']); }
 function logSheet() {
   return sheet(SHEET_LOG, ['完成時間', '班級', '座號', '姓名', '得分', '首答正確(8)', '連線數', '用時(秒)', '疑似亂答',
-    '第1格', '第2格', '第3格', '第4格', '第6格', '第7格', '第8格', '第9格', '誓言鷹架', '誓言內容']);
+    '第1格', '第2格', '第3格', '第4格', '第6格', '第7格', '第8格', '第9格偶像名言', '心得鷹架', '觀影心得']);
 }
 function readData() {
   const sh = dataSheet(), vals = sh.getDataRange().getValues(), map = {};
@@ -178,7 +178,7 @@ function writeRow(rec) {
 /* ---------------- 計分 ---------------- */
 const LINES_THROUGH_CENTER = [['q4', 'q6'], ['q2', 'q8'], ['q1', 'q9'], ['q3', 'q7']];
 
-function grade(choices, vow) {
+function grade(choices, vow, idol) {
   const per = {};
   let first = 0, done = 0;
   QIDS.forEach(q => {
@@ -190,17 +190,18 @@ function grade(choices, vow) {
     per[q] = { first: f, tries: arr.length, correctFirst: f === ans, completed: fin };
   });
   const vowOk = !!(vow && vow.text && vow.blanks && vow.blanks.length === 2 && vow.blanks.every(b => String(b).trim().length >= 2));
-  const lit = q => q === 'c' ? vowOk : per[q].completed;
+  const idolOk = !!(idol && String(idol.name || '').trim().length >= 2 && String(idol.quote || '').trim().length >= 4);
+  const lit = q => q === 'c' ? vowOk : q === 'q9' ? idolOk : per[q].completed;
   let lines = 0;
   if (vowOk) LINES_THROUGH_CENTER.forEach(l => { if (lit(l[0]) && lit(l[1])) lines++; });
-  const score = first * 10 + (vowOk ? 20 : 0);
-  return { per: per, first: first, done: done, vowOk: vowOk, lines: lines, score: score };
+  const score = first * 10 + (vowOk ? 20 : 0) + (idolOk ? 10 : 0);   // 滿分 70+20+10=100
+  return { per: per, first: first, done: done, vowOk: vowOk, idolOk: idolOk, lines: lines, score: score };
 }
 
-function levelReport(per, vowOk) {
+function levelReport(per, vowOk, idolOk) {
   return LEVELS.map(L => {
     let got = 0;
-    L.qs.forEach(q => { if (q === 'vow' ? vowOk : per[q].correctFirst) got++; });
+    L.qs.forEach(q => { if (q === 'vow' ? vowOk : q === 'idol' ? idolOk : per[q].correctFirst) got++; });
     return { name: L.name, desc: L.desc, got: got, total: L.qs.length, pass: got / L.qs.length >= 0.66 };
   });
 }
@@ -208,8 +209,8 @@ function levelReport(per, vowOk) {
 function buildReport(st, a, settings) {
   const rep = {
     cls: st.cls, seat: st.seat, name: st.name, at: a.at, seconds: a.seconds, score: a.score,
-    first: a.first, done: a.done, lines: a.lines, vowOk: a.vowOk, vow: a.vow,
-    levels: levelReport(a.per, a.vowOk), published: !!settings.published
+    first: a.first, done: a.done, lines: a.lines, vowOk: a.vowOk, vow: a.vow, idolOk: !!a.idolOk, idol: a.idol || null,
+    levels: levelReport(a.per, a.vowOk, !!a.idolOk), published: !!settings.published
   };
   if (settings.published) {
     rep.detail = QIDS.map(q => ({ q: q, mine: a.per[q].first, ans: ANSWERS[q].ans, ok: a.per[q].correctFirst, exp: ANSWERS[q].exp || '' }));
@@ -248,11 +249,12 @@ function actSave(req, fromImport) {
       blanks: (req.vow.blanks || []).slice(0, 2).map(b => cleanText(b, TEXT_MAX)),
       text: cleanText(req.vow.text, 400)
     } : null;
-    const g = grade(choices, vow);
+    const idol = req.idol ? { name: cleanText(req.idol.name, 20), quote: cleanText(req.idol.quote, 120) } : null;
+    const g = grade(choices, vow, idol);
     if (g.lines < 1 && !fromImport) return { ok: false, error: '還沒有完成通過中央的連線，請先完成再交出' };
     const seconds = Math.max(0, Math.min(86400, Math.round(Number(req.seconds) || 0)));
     const at = fromImport && req.at ? String(req.at) : new Date().toISOString();
-    const a = { at: at, seconds: seconds, score: g.score, first: g.first, done: g.done, lines: g.lines, vowOk: g.vowOk, per: g.per, vow: vow };
+    const a = { at: at, seconds: seconds, score: g.score, first: g.first, done: g.done, lines: g.lines, vowOk: g.vowOk, idolOk: g.idolOk, idol: idol, per: g.per, vow: vow };
     if (rec.attempts.some(x => x.at === at)) return { ok: true, dup: true, report: buildReport(st, a, settings) };
     rec.name = st.name;
     rec.attempts = rec.attempts.concat(a).sort((x, y) => x.at < y.at ? -1 : 1).slice(-MAX_HISTORY);
@@ -261,7 +263,7 @@ function actSave(req, fromImport) {
     writeRow(rec);
     const sus = suspectOf(a, settings.suspectSec);
     logSheet().appendRow([new Date(at), safeCell(st.cls), st.seat, safeCell(st.name), g.score, g.first, g.lines, seconds, sus ? '是' : '',
-      ...QIDS.map(q => safeCell((choices[q] || []).join('→'))), vow ? vow.scaffold : '', safeCell(vow ? vow.text : '')]);
+      ...QIDS.map(q => safeCell((choices[q] || []).join('→'))), safeCell(idol ? idol.name + '：「' + idol.quote + '」' : ''), vow ? vow.scaffold : '', safeCell(vow ? vow.text : '')]);
     if (settings.redo.indexOf(st.key) >= 0) { settings.redo = settings.redo.filter(k => k !== st.key); putSettings(settings); }
     CacheService.getScriptCache().remove('att:' + st.key);
     return { ok: true, report: buildReport(st, a, settings) };
