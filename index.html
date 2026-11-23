@@ -530,7 +530,7 @@ function openCenter(){
     <div id="photoBox" class="muted" style="font-size:13px;margin-top:6px">拍完會自動做成一張「心得卡」，請存到手機，等一下上傳到 Padlet。</div>
     <div class="stepT">③ 前往 Padlet 貼文</div>
     <a id="goPad" class="btn gold" style="display:block;text-align:center;text-decoration:none" href="${esc(PADLET)}" target="_blank" rel="noopener" onclick="return vowGo(event)">👉 前往 Padlet</a>
-    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製想法）。到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳心得卡（或照片）</b>。<br>Padlet 網址：<a href="${esc(PADLET)}" target="_blank" rel="noopener" style="color:var(--blue);word-break:break-all">${esc(PADLET)}</a></p>
+    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製想法）。到 Padlet 按「＋」→ <b>文字框貼上你的想法</b> → <b>上傳心得卡</b>（不是原本的照片）。<b>文字和心得卡兩樣都要有。</b><br>Padlet 網址：<a href="${esc(PADLET)}" target="_blank" rel="noopener" style="color:var(--blue);word-break:break-all">${esc(PADLET)}</a></p>
   </div>`, {full:true, sticky:true});
   drawVow(v.scaffold===vowScaf ? (v.blanks||[]) : []);
 }
@@ -630,9 +630,14 @@ function vowGo(e){
     <div style="font-size:56px">⭐</div><div class="qtitle">中央核心已解鎖！</div>
     ${cardURL?`<img src="${cardURL}" style="width:200px;border:3px solid #1d1d1f;border-radius:14px;margin:6px auto">`:''}
     <div class="vow" style="text-align:left">${esc(text)}</div>
-    <p>${copied?'✅ 想法已複製。':'⚠️ 沒有自動複製成功，請長按上面的文字自行複製。'}到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳心得卡</b>。</p>
+    <p style="margin:6px 0">${copied?'✅ 想法已複製。':'⚠️ 沒有自動複製成功，請長按上面的文字自行複製。'}</p><div class="hint" style="text-align:left"><b>📌 Padlet 上要有「文字＋心得卡」兩樣才算完成：</b><ol style="text-align:left;line-height:1.9;margin:8px 0 0;padding-left:22px;list-style:decimal;font-size:15px">
+      <li>先按下面的「⬇️ 存下心得卡」（字已經印在卡上）。</li>
+      <li>開 Padlet（觀影心得區），按「＋」。</li>
+      <li>在文字框<b>長按 → 貼上</b>你的文字（網頁已經幫你複製好）。</li>
+      <li>上傳剛剛存的<b>心得卡</b>，不是原本的照片。</li>
+      <li>按「發布」，回來點「回到九宮格」。</li></ol></div>
     <div style="display:grid;gap:10px;margin-top:14px">
-      ${cardURL?`<a class="btn ghost" style="display:block;text-decoration:none" href="${cardURL}" download="${esc(fn)}">⬇️ 再存一次心得卡</a>`:''}
+      ${cardURL?`<a class="btn" style="display:block;text-decoration:none" href="${cardURL}" download="${esc(fn)}">⬇️ 存下心得卡</a>`:''}
       <button class="btn ghost" onclick="copyText(${esc(JSON.stringify(full))})?toast('已再次複製'):toast('請長按文字複製')">再複製一次文字</button>
       <a class="btn ghost" style="display:block;text-decoration:none" href="${esc(PADLET)}" target="_blank" rel="noopener">開啟 Padlet</a>
       <button class="btn gold" onclick="closeModal();drawBoard();if(lineCount()>0&&!S.celebrated){S.celebrated=true;save();confetti(1800);}">回到九宮格</button>
@@ -661,7 +666,7 @@ function openIdol(){
     <div id="idolBox" class="muted" style="font-size:13px;margin-top:6px">選好照片會自動做成「偶像名言卡」，請存到手機，等一下上傳到 Padlet。</div>
     <div class="stepT">③ 前往 Padlet 貼文</div>
     <a class="btn gold" style="display:block;text-align:center;text-decoration:none" href="${esc(IDOL_PADLET)}" target="_blank" rel="noopener" onclick="return idolGo(event)">👉 前往 Padlet（偶像區）</a>
-    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製文字）。到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳偶像名言卡（或照片）</b>。</p>
+    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製文字）。到 Padlet 按「＋」→ <b>文字框貼上偶像和名言</b> → <b>上傳偶像名言卡</b>。<b>文字和名言卡兩樣都要有。</b></p>
   </div>`, {full:true, sticky:true});
 }
 function idolCheck(){
@@ -703,9 +708,14 @@ function idolGo(e){
   makeIdolCard().then(()=>{ const mb=$('#modalBox'); if(!mb) return; mb.innerHTML=`<div class="in" style="text-align:center;padding-top:24px">
     <div style="font-size:56px">🌟</div><div class="qtitle">第 9 格點亮！</div>
     ${idolURL?`<img src="${idolURL}" style="width:200px;border:3px solid #1d1d1f;border-radius:14px;margin:6px auto">`:''}
-    <p>${copied?'✅ 文字已複製。':'⚠️ 沒有自動複製成功，請手動輸入。'}到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳偶像名言卡</b>。</p>
+    <p style="margin:6px 0">${copied?'✅ 文字已複製。':'⚠️ 沒有自動複製成功，請在 Padlet 自己打上偶像和名言。'}</p><div class="hint" style="text-align:left"><b>📌 Padlet 上要有「文字＋偶像名言卡」兩樣才算完成：</b><ol style="text-align:left;line-height:1.9;margin:8px 0 0;padding-left:22px;list-style:decimal;font-size:15px">
+      <li>先按下面的「⬇️ 存下偶像名言卡」（字已經印在卡上）。</li>
+      <li>開 Padlet（偶像區），按「＋」。</li>
+      <li>在文字框<b>長按 → 貼上</b>你的文字（網頁已經幫你複製好）。</li>
+      <li>上傳剛剛存的<b>偶像名言卡</b>，不是原本的照片。</li>
+      <li>按「發布」，回來點「回到九宮格」。</li></ol></div>
     <div style="display:grid;gap:10px;margin-top:14px">
-      ${idolURL?`<a class="btn ghost" style="display:block;text-decoration:none" href="${idolURL}" download="偶像名言卡_${esc(S.student.cls)}班${esc(S.student.seat)}號.png">⬇️ 再存一次偶像名言卡</a>`:''}
+      ${idolURL?`<a class="btn" style="display:block;text-decoration:none" href="${idolURL}" download="偶像名言卡_${esc(S.student.cls)}班${esc(S.student.seat)}號.png">⬇️ 存下偶像名言卡</a>`:''}
       <button class="btn ghost" onclick="copyText(${esc(JSON.stringify(full))})?toast('已再次複製'):toast('複製失敗')">再複製一次文字</button>
       <a class="btn ghost" style="display:block;text-decoration:none" href="${esc(IDOL_PADLET)}" target="_blank" rel="noopener">開啟 Padlet（偶像區）</a>
       <button class="btn gold" onclick="closeModal();drawBoard();if(lineCount()>0&&!S.celebrated){S.celebrated=true;save();confetti(1800);}">回到九宮格</button>
