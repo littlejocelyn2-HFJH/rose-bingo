@@ -85,7 +85,11 @@
   .cell .t{font-size:clamp(13px,3.6vw,17px);font-weight:900;line-height:1.25;margin-top:4px}
   .cell.lit{background:var(--lit,var(--red));color:var(--litInk,#fff);animation:pop .45s ease}
   .cell.lit::after{content:"✔";position:absolute;right:8px;top:4px;font-size:17px;font-weight:900}
-  .cell.center{background:#fff;border-style:dashed;border-width:3px}
+  .cell.center{background:#fff}
+  .cell.req{border-width:6px;box-shadow:6px 6px 0 var(--ink);padding-top:20px}
+  .cell.req:not(.lit){background:#fff}
+  .cell .reqTag{position:absolute;left:4px;top:4px;font-size:11px;font-weight:900;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:1px 6px;line-height:1.4}
+  .cell.req.lit .reqTag{display:none}
   .cell.center .no{color:var(--red)}
   .cell.center.lit{background:var(--yellow);border-style:solid;color:var(--ink);animation:pop .45s ease, wob 2.2s ease-in-out infinite}
   .cell.center.lit .no{color:var(--ink)}
@@ -433,9 +437,9 @@ function drawBoard(){
   const inLine = new Set();
   if(S.lit.c) LINES.forEach(l=>{ if(S.lit[l[0]]&&S.lit[l[1]]){ inLine.add(l[0]); inLine.add(l[1]); inLine.add('c'); } });
   $('#board').innerHTML = ORDER.map(k=>{
-    if(k==='c') return `<button class="cell center ${S.lit.c?'lit':''} ${inLine.has('c')?'inline':''}" onclick="openCenter()">
-      <span class="no">⭐ 第 5 格</span><span class="t">${S.lit.c?'心得已貼':'觀影心得'}</span><span style="font-size:12px;margin-top:4px">${S.lit.c?'金光解鎖':'（必填）'}</span></button>`;
-    if(k==='q9') return `<button class="cell ${S.lit.q9?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT.q9[0]};--litInk:${LIT.q9[1]}" onclick="openIdol()"><span class="no">第 9 格</span><span class="t">我的偶像名言</span><span style="font-size:11px;margin-top:3px">${S.lit.q9?'📷 已上傳':'（必填）'}</span></button>`;
+    if(k==='c') return `<button class="cell center req ${S.lit.c?'lit':''} ${inLine.has('c')?'inline':''}" onclick="openCenter()"><span class="reqTag">必填</span>
+      <span class="no">⭐ 第 5 格</span><span class="t">${S.lit.c?'心得已貼':'觀影心得'}</span><span style="font-size:12px;margin-top:4px">${S.lit.c?'金光解鎖':'寫心得＋拍照'}</span></button>`;
+    if(k==='q9') return `<button class="cell req ${S.lit.q9?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT.q9[0]};--litInk:${LIT.q9[1]}" onclick="openIdol()"><span class="reqTag">必填</span><span class="no">第 9 格</span><span class="t">我的偶像名言</span><span style="font-size:11px;margin-top:3px">${S.lit.q9?'📷 已上傳':'寫名言＋照片'}</span></button>`;
     const q=QS[k];
     return `<button class="cell ${S.lit[k]?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT[k][0]};--litInk:${LIT[k][1]}" onclick="openQ('${k}')"><span class="no">第 ${q.no} 格</span><span class="t">${esc(q.title)}</span></button>`;
   }).join('');
