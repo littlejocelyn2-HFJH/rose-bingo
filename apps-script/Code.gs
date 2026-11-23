@@ -252,6 +252,7 @@ function actSave(req, fromImport) {
     const idol = req.idol ? { name: cleanText(req.idol.name, 20), quote: cleanText(req.idol.quote, 120) } : null;
     const g = grade(choices, vow, idol);
     if (g.lines < 1 && !fromImport) return { ok: false, error: '還沒有完成通過中央的連線，請先完成再交出' };
+    if (!g.idolOk && !fromImport) return { ok: false, error: '第 9 格「我的偶像名言」是必做的，請先完成再交出' };
     const seconds = Math.max(0, Math.min(86400, Math.round(Number(req.seconds) || 0)));
     const at = fromImport && req.at ? String(req.at) : new Date().toISOString();
     const a = { at: at, seconds: seconds, score: g.score, first: g.first, done: g.done, lines: g.lines, vowOk: g.vowOk, idolOk: g.idolOk, idol: idol, per: g.per, vow: vow };

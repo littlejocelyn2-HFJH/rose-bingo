@@ -207,9 +207,9 @@
       <b>怎麼玩？</b>
       <ol class="steps">
         <li>填班級、座號、姓名。</li>
-        <li>點外圍格子答題，答對就會<b>上色點亮</b>；第 9 格是上傳任務：寫下你的偶像和他的名言。</li>
+        <li>點外圍格子答題，答對就會<b>上色點亮</b>；第 9 格是必做的上傳任務：寫下你的偶像和他的名言。</li>
         <li>點正中央 ⭐ 寫一句看完影片的想法、拍一張照片（自己、和好朋友合照，或代表你的東西都可以），再到 Padlet 貼上。</li>
-        <li>連成一條線（一定要通過中央）就能交出成果、領勳章。</li>
+        <li>完成<b>中央格</b>和<b>第 9 格</b>（兩格必做），再連成一條通過中央的線，就能交出成果、領勳章。</li>
       </ol>
     </div>
   </section>
@@ -223,7 +223,7 @@
     <div class="board" id="board"></div>
     <div class="progress"><span id="progLit"></span><span id="progLine"></span></div>
     <div id="winbar" class="winbar hidden"></div>
-    <p class="muted" style="font-size:13px;text-align:center;max-width:520px;margin:14px auto 0">連線規則：橫、直、斜都可以，但一定要通過正中央 ⭐。</p>
+    <p class="muted" style="font-size:13px;text-align:center;max-width:520px;margin:14px auto 0">必做：⭐ 中央格、🌟 第 9 格。連線規則：橫、直、斜都可以，但一定要通過正中央。</p>
   </section>
 
   <!-- 報告書（學生） -->
@@ -435,7 +435,7 @@ function drawBoard(){
   $('#board').innerHTML = ORDER.map(k=>{
     if(k==='c') return `<button class="cell center ${S.lit.c?'lit':''} ${inLine.has('c')?'inline':''}" onclick="openCenter()">
       <span class="no">⭐ 第 5 格</span><span class="t">${S.lit.c?'心得已貼':'觀影心得'}</span><span style="font-size:12px;margin-top:4px">${S.lit.c?'金光解鎖':'（必填）'}</span></button>`;
-    if(k==='q9') return `<button class="cell ${S.lit.q9?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT.q9[0]};--litInk:${LIT.q9[1]}" onclick="openIdol()"><span class="no">第 9 格</span><span class="t">我的偶像名言</span><span style="font-size:11px;margin-top:3px">📷 上傳任務</span></button>`;
+    if(k==='q9') return `<button class="cell ${S.lit.q9?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT.q9[0]};--litInk:${LIT.q9[1]}" onclick="openIdol()"><span class="no">第 9 格</span><span class="t">我的偶像名言</span><span style="font-size:11px;margin-top:3px">${S.lit.q9?'📷 已上傳':'（必填）'}</span></button>`;
     const q=QS[k];
     return `<button class="cell ${S.lit[k]?'lit':''} ${inLine.has(k)?'inline':''}" style="--lit:${LIT[k][0]};--litInk:${LIT[k][1]}" onclick="openQ('${k}')"><span class="no">第 ${q.no} 格</span><span class="t">${esc(q.title)}</span></button>`;
   }).join('');
@@ -446,12 +446,15 @@ function drawBoard(){
   if(S.submitted){
     wb.classList.remove('hidden');
     wb.innerHTML = `<b style="color:var(--gold2)">✅ 已交出成果</b><div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn gold sm" onclick="showMedal()">🏆 我的勳章</button><button class="btn ghost sm" onclick="go('report')">📄 報告書</button></div>`;
+  } else if(L>0 && !S.lit.q9){
+    wb.classList.remove('hidden');
+    wb.innerHTML = `<b style="color:var(--gold2)">🔥 達成 ${L} 條連線！</b><div style="font-size:15px;margin-top:6px">還差一步：<b>第 9 格「我的偶像名言」是必做的</b>，完成後就能交出成果。</div><button class="btn gold" style="width:100%;margin-top:10px" onclick="openIdol()">🌟 去完成第 9 格</button>`;
   } else if(L>0){
     wb.classList.remove('hidden');
     wb.innerHTML = `<b style="color:var(--gold2)">🔥 達成 ${L} 條連線！</b><div class="muted" style="font-size:14px;margin:4px 0 10px">可以交出成果，也可以繼續點亮更多格、增加連線數（交出後就不能再改）。</div><button class="btn gold" style="width:100%" onclick="submitAll()">🏆 交出成果，領 MVP 勳章</button>`;
-  } else if(!S.lit.c && n>=2){
+  } else if(n>=2 && (!S.lit.c || !S.lit.q9)){
     wb.classList.remove('hidden');
-    wb.innerHTML = `<span class="muted">⭐ 別忘了中央格！沒有點亮中央，就連不成線。</span>`;
+    wb.innerHTML = `<span class="muted">${!S.lit.c?'⭐ 別忘了中央格！沒有點亮中央，就連不成線。':''}${!S.lit.c&&!S.lit.q9?'<br>':''}${!S.lit.q9?'🌟 第 9 格「我的偶像名言」也是必做的喔。':''}</span>`;
   } else wb.classList.add('hidden');
 }
 
@@ -640,7 +643,7 @@ function openIdol(){
   if(S.submitted) return toast('你已經交出成果囉');
   const d=S.idol||{}; idolImg=null; idolURL=null;
   modal(`<div class="in">
-    <div style="display:flex;justify-content:space-between;align-items:center"><div class="qhead">第 9 格｜上傳任務</div><button class="btn ghost sm" onclick="closeModal()">✕</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="qhead">第 9 格｜上傳任務（必填）</div><button class="btn ghost sm" onclick="closeModal()">✕</button></div>
     <div class="qtitle">我的偶像名言</div>
     <div class="muted" style="font-size:14px;margin-bottom:8px">你的偶像可以是運動員、教練、家人，或任何讓你想變強的人。</div>
     <div class="stepT">① 寫下偶像和他的名言</div>
@@ -710,6 +713,7 @@ function idolGo(e){
 async function submitAll(){
   if(busy || S.submitted) return;
   if(lineCount()<1) return toast('還沒有連線喔');
+  if(!S.lit.q9) return toast('第 9 格「我的偶像名言」是必做的，先完成再交出喔',3500);
   busy=true;
   const payload = Object.assign({}, stu(), {choices:S.choices, vow:S.vow, idol:S.idol, seconds:Math.round((Date.now()-(S.startedAt||Date.now()))/1000), lines:lineCount(), at:new Date().toISOString()});
   if(LOCAL){
