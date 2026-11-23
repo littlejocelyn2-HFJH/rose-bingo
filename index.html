@@ -521,9 +521,9 @@ function openCenter(){
     <div class="muted" style="font-size:14px;margin-bottom:8px">可以拍自己、和好朋友合照，或拍一樣代表你的東西（球鞋、球、球場、護具…），不一定要有人。</div>
     <label class="btn ghost" style="display:block;text-align:center" onclick="return photoGate(event)">📸 拍照<input id="photoIn" type="file" accept="image/*" capture="user" style="display:none" onchange="onPhoto(this)"></label>
     <div id="photoBox" class="muted" style="font-size:13px;margin-top:6px">拍完會自動做成一張「心得卡」，請存到手機，等一下上傳到 Padlet。</div>
-    <div class="stepT">③ 複製想法，前往 Padlet</div>
-    <a id="goPad" class="btn gold" style="display:block;text-align:center;text-decoration:none" href="${esc(PADLET)}" target="_blank" rel="noopener" onclick="return vowGo(event)">📋 複製我的想法並前往 Padlet</a>
-    <p class="muted" style="font-size:13px">到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳心得卡（或照片）</b>。</p>
+    <div class="stepT">③ 前往 Padlet 貼文</div>
+    <a id="goPad" class="btn gold" style="display:block;text-align:center;text-decoration:none" href="${esc(PADLET)}" target="_blank" rel="noopener" onclick="return vowGo(event)">👉 前往 Padlet</a>
+    <p class="muted" style="font-size:13px">點了會直接開 Padlet（①②完成時會自動幫你複製想法）。到 Padlet 按「＋」→ <b>貼上文字</b> → <b>上傳心得卡（或照片）</b>。<br>Padlet 網址：<a href="${esc(PADLET)}" target="_blank" rel="noopener" style="color:var(--blue);word-break:break-all">${esc(PADLET)}</a></p>
   </div>`, {full:true, sticky:true});
   drawVow(v.scaffold===vowScaf ? (v.blanks||[]) : []);
 }
@@ -600,9 +600,12 @@ function vowText(){
   return p[0]+b0+p[1]+b1+p[2];
 }
 function vowGo(e){
+  // 一律直接開 Padlet；①②都完成才複製文字並點亮中央格
   const b=vowCheck();
-  if(!b){ e.preventDefault(); return false; }
-  if(!photoImg){ e.preventDefault(); toast('請先完成第 ② 步：拍一張照片'); $('#photoBox').scrollIntoView({behavior:'smooth',block:'center'}); return false; }
+  if(!b || !photoImg){
+    setTimeout(()=>toast(!b?'Padlet 已開啟。回來寫完第 ① 步的想法，中央格才會點亮喔':'Padlet 已開啟。回來完成第 ② 步拍照，中央格才會點亮喔',4500),300);
+    return true;
+  }
   const text=vowText();
   const full=`【${S.student.cls}班${S.student.seat}號 ${S.student.name}｜看完影片，我想說】\n${text}`;
   const copied=copyText(full);
